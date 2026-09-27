@@ -1,0 +1,54 @@
+name: Docs
+
+on:
+  push:
+    branches:
+    - main
+    tags:
+    - '*.*.*'
+  workflow_dispatch:
+
+concurrency:
+  group: docs
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build on Read the Docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RTD_TOKEN: ${{ secrets.RTD_TOKEN }}
+      API: https://app.readthedocs.org/api/v3/projects/djangobots
+    steps:
+    - name: Sync versions and trigger builds
+      # Without the token the job only warns, so forks and new clones stay green.
+      run: |
+        if [ -z "$RTD_TOKEN" ]; then
+          echo "::warning::The RTD_TOKEN secret isn't set, so Read the Docs wasn't asked to build."
+          exit 0
+        fi
+        rtd() {
+          curl --fail-with-body --silent --show-error --retry 3 \
+            -H "Authorization: Token $RTD_TOKEN" -H "Content-Type: application/json" "$@"
+        }
+        rtd -X POST "$API/sync-versions/"
+        if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+          # The sync runs in the background and creates or moves "stable" to the new tag.
+          for _ in $(seq 30); do
+            ref=$(rtd "$API/versions/stable/" | python3 -c 'import json, sys; print(json.load(sys.stdin).get("ref"))' || true)
+            [ "$ref" = "$GITHUB_REF_NAME" ] && break
+            sleep 10
+          done
+          versions="stable"
+        else
+          versions="latest"
+        fi
+        for version in $versions; do
+          rtd -X PATCH "$API/versions/$version/" -d '{"active": true}'
+          rtd -X POST "$API/versions/$version/builds/"
+          echo "Triggered a build of $version."
+        done
