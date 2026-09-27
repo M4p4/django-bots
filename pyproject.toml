@@ -124,7 +124,10 @@ enable_error_code = [
   "truthy-bool",
 ]
 strict = true
-overrides = [ { module = "tests.*", allow_untyped_defs = true, allow_untyped_calls = true } ]
+overrides = [
+  { module = "tests.*", allow_untyped_defs = true, allow_untyped_calls = true },
+  { module = "crawleruseragents", ignore_missing_imports = true },
+]
 
 [tool.pytest]
 ini_options.testpaths = [ "tests" ]

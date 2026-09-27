@@ -18,6 +18,14 @@
 .. autoclass:: django_bots.useragent.Device
 ```
 
+## `django_bots.crawlers`
+
+```{eval-rst}
+.. autofunction:: django_bots.crawlers.is_crawler
+
+.. autofunction:: django_bots.crawlers.crawler_patterns
+```
+
 ## `django_bots.utils`
 
 ```{eval-rst}

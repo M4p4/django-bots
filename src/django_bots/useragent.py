@@ -20,6 +20,7 @@ from ua_parser import Cache, CachingResolver, Resolver
 from ua_parser.caching import Lru
 
 from django_bots.conf import bots_settings
+from django_bots.crawlers import is_crawler
 
 __all__ = ["Browser", "Device", "OperatingSystem", "UserAgent", "parse"]
 
@@ -281,6 +282,11 @@ class UserAgent:
     def is_bot(self) -> bool:
         """Whether ua-parser classifies the device as a spider."""
         return self.device.family == "Spider"
+
+    @property
+    def is_crawler(self) -> bool:
+        """Whether the user agent matches a crawler-user-agents pattern."""
+        return is_crawler(self.ua_string)
 
     @property
     def is_email_client(self) -> bool:
