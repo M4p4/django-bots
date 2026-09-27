@@ -144,6 +144,7 @@ def test_block_default_response(rf):
     assert isinstance(response, HttpResponse)
     assert response.status_code == 429
     assert response["Content-Type"] == "text/plain; charset=utf-8"
+    assert response["Cache-Control"] == "private, no-store"
 
 
 @override_settings(BOTS_AI_ALLOW=["GPTBot"])
@@ -166,6 +167,21 @@ def test_block_exempt_paths(rf):
     assert isinstance(exempt, HttpResponse)
     assert isinstance(robots, HttpResponse)
     assert (exempt.status_code, robots.status_code) == (200, 403)
+
+
+@pytest.mark.parametrize(
+    ("path", "status"),
+    [("/robots.txt", 200), ("/blog/robots.txt", 403)],
+)
+def test_block_exempt_paths_under_script_prefix(rf, path, status):
+    middleware = AIBotBlockMiddleware(ok_view)
+    request = rf.get(path, SCRIPT_NAME="/blog", headers={"user-agent": GPTBOT})
+
+    response = middleware(request)
+
+    assert request.path == "/blog" + path
+    assert isinstance(response, HttpResponse)
+    assert response.status_code == status
 
 
 @pytest.mark.parametrize("view", ["block_view", "async_block_view", "block_view_cbv"])
