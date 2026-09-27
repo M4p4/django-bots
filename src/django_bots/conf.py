@@ -51,6 +51,11 @@ class BotsSettings:
         return _get("AI_EXTRA", ())
 
     @property
+    def AI_BLOCK_CATEGORIES(self) -> Sequence[str]:
+        """AI bot categories the blocking middleware blocks."""
+        return _get("AI_BLOCK_CATEGORIES", ("training", "search", "assistant"))
+
+    @property
     def AI_BLOCK_STATUS(self) -> int:
         """Status code of the default block response."""
         return _get("AI_BLOCK_STATUS", 403)

@@ -71,6 +71,7 @@ def test_ai_block_view_invalid(view):
         "BOTS_AI_ALLOW",
         "BOTS_AI_EXTRA",
         "BOTS_AI_BLOCK_EXEMPT_PATHS",
+        "BOTS_AI_BLOCK_CATEGORIES",
     ],
 )
 @pytest.mark.parametrize("value", ["/robots.txt", ["ok", ""], ["ok", 1], {"ok"}, None])
@@ -109,6 +110,8 @@ def test_list_setting_hint(value, hint):
         {"BOTS_AI_BLOCK_EXEMPT_PATHS": []},
         {"BOTS_UA_CACHE_SIZE": 0},
         {"BOTS_AI_BLOCK_STATUS": 404},
+        {"BOTS_AI_BLOCK_CATEGORIES": ["training", "search", "assistant", "agent"]},
+        {"BOTS_AI_BLOCK_CATEGORIES": []},
     ],
 )
 def test_valid_settings(settings):
@@ -198,3 +201,12 @@ def test_crawler_ignore_unknown_pattern_warns():
     assert [message.id for message in result] == ["django_bots.W005"]
     assert isinstance(result[0], Warning)
     assert "'curl'" in result[0].msg
+
+
+def test_ai_block_categories_unknown():
+    with override_settings(BOTS_AI_BLOCK_CATEGORIES=["training", "agents"]):
+        result = run_checks()
+
+    assert [message.id for message in result] == ["django_bots.E007"]
+    assert isinstance(result[0], Error)
+    assert "'agents'" in result[0].msg

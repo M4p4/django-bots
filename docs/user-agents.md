@@ -72,6 +72,7 @@ django-user-agents is built on.
 | `is_crawler` | `False` | Matches a [crawler pattern](crawlers.md) |
 | `is_ai_bot` | `False` | Matches an [AI bot](ai-bots.md) |
 | `ai_bot` | `None` | Name of the matched AI bot, such as `"GPTBot"` |
+| `ai_bot_category` | `None` | [Category](ai-bots.md#categories) of the matched AI bot, such as `"training"` |
 
 `browser`, `os` and `device` are named tuples. Version parts made of digits are
 ints, and other parts stay strings, so Windows RT gives `version=("RT",)`.

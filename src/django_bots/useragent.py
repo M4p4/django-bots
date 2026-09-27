@@ -19,7 +19,7 @@ import ua_parser
 from ua_parser import Cache, CachingResolver, Resolver
 from ua_parser.caching import Lru
 
-from django_bots.ai import match_ai_bot
+from django_bots.ai import ai_bot_category, match_ai_bot
 from django_bots.conf import UA_MAX_LENGTH, bots_settings
 from django_bots.crawlers import is_crawler
 
@@ -302,6 +302,11 @@ class UserAgent:
     def ai_bot(self) -> str | None:
         """The name of the matched ai.robots.txt entry, or ``None``."""
         return match_ai_bot(self.ua_string)
+
+    @property
+    def ai_bot_category(self) -> str | None:
+        """The category of ``ai_bot``, such as ``"training"`` or ``"agent"``, or ``None``."""
+        return ai_bot_category(self.ai_bot) if self.ai_bot else None
 
     @property
     def is_email_client(self) -> bool:

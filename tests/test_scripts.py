@@ -185,7 +185,8 @@ class TestCheckUpstreamVersion:
 class TestAIBotDiff:
     def test_summarize_changes(self):
         summary = ai_bot_diff.summarize(
-            {"GPTBot", "OldBot"}, {"GPTBot", "newbot", "Abot"}
+            {"GPTBot", "OldBot"},
+            {"GPTBot": {}, "newbot": {"function": "AI Coding Agents"}, "Abot": {}},
         )
 
         assert summary == (
@@ -193,9 +194,12 @@ class TestAIBotDiff:
             "\n"
             "Removed names are no longer blocked or listed in robots.txt output.\n"
             "\n"
+            "Check the category of each added name. Only `agent` isn't blocked by default;\n"
+            "correct one in `src/django_bots/data/ai_categories.json`.\n"
+            "\n"
             "### Added (2)\n"
             "\n"
-            "`Abot`, `newbot`\n"
+            "`Abot` (training), `newbot` (agent)\n"
             "\n"
             "### Removed (1)\n"
             "\n"
@@ -203,7 +207,7 @@ class TestAIBotDiff:
         )
 
     def test_summarize_no_changes(self):
-        summary = ai_bot_diff.summarize({"GPTBot"}, {"GPTBot"})
+        summary = ai_bot_diff.summarize({"GPTBot"}, {"GPTBot": {}})
 
         assert summary == (
             "1 AI bots before, 1 after.\n"
@@ -218,7 +222,7 @@ class TestAIBotDiff:
 
         ai_bot_diff.main()
 
-        assert "### Added (1)\n\n`ClaudeBot`\n" in capsys.readouterr().out
+        assert "### Added (1)\n\n`ClaudeBot` (training)\n" in capsys.readouterr().out
 
 
 RELEASED = "# Changelog\n\n## 1.0.0 (2026-10-01)\n\n- First release.\n"

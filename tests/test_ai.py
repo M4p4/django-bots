@@ -8,9 +8,12 @@ from django.test import override_settings
 import django_bots
 from django_bots import ai
 from django_bots.ai import (
+    AI_BOT_CATEGORIES,
     URL_OR_EMAIL,
+    ai_bot_category,
     ai_bot_names,
     ai_bots,
+    categorize,
     is_ai_bot,
     match_ai_bot,
     robots_rules,
@@ -306,3 +309,75 @@ def test_data_versions():
         "uap_core",
     }
     assert versions["ai_robots_txt"].startswith("v")
+
+
+def test_every_bundled_name_has_a_category():
+    categories = {categorize(name, entry) for name, entry in ai_bots().items()}
+
+    assert categories == set(AI_BOT_CATEGORIES)
+
+
+def test_category_overrides_are_valid():
+    groups = ai._read_data("ai_categories.json")
+    names = [name for group in groups.values() for name in group]
+
+    assert set(groups) <= set(AI_BOT_CATEGORIES)
+    assert len(names) == len(set(names))
+    assert set(names) <= set(ai_bots())
+
+
+@pytest.mark.parametrize(
+    ("name", "entry", "expected"),
+    [
+        ("NewBot", {"function": "AI Coding Agents"}, "agent"),
+        ("NewBot", {"function": "AI Search Crawlers"}, "search"),
+        ("NewBot", {"function": "AI Assistants"}, "assistant"),
+        ("NewBot", {"function": "LLM training."}, "training"),
+        ("NewBot", {}, "training"),
+        ("PerplexityBot", {"function": "Search result generation."}, "search"),
+        ("NewBot", {"function": "Undocumented AI Agents"}, "training"),
+    ],
+)
+def test_categorize(name, entry, expected):
+    assert categorize(name, entry) == expected
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        ("GPTBot", "training"),
+        ("gptbot", "training"),
+        ("OAI-SearchBot", "search"),
+        ("ChatGPT-User", "assistant"),
+        ("MistralAI-User", "assistant"),
+        ("Cursor", "agent"),
+        ("Code", "agent"),
+        ("Googlebot", None),
+    ],
+)
+def test_ai_bot_category(name, expected):
+    assert ai_bot_category(name) == expected
+
+
+def test_extra_names_are_training():
+    with override_settings(BOTS_AI_EXTRA=["NewBot"]):
+        result = ai_bot_category("newbot")
+
+    assert result == "training"
+
+
+@pytest.mark.parametrize(
+    ("ua_string", "expected"),
+    [
+        (GPTBOT, "training"),
+        (OAI_SEARCHBOT, "search"),
+        (
+            "Mozilla/5.0 (Macintosh) AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Code/1.104.0 Chrome/138.0.7204.100 Electron/37.3.1 Safari/537.36",
+            "agent",
+        ),
+        (WINDOWS_CHROME, None),
+    ],
+)
+def test_user_agent_category(ua_string, expected):
+    assert parse(ua_string).ai_bot_category == expected

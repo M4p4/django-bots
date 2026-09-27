@@ -5,6 +5,7 @@ from django.core.checks import Tags, register
 
 from django_bots.checks import (
     check_ai_allow,
+    check_ai_block_categories,
     check_ai_block_status,
     check_ai_block_view,
     check_crawler_extra,
@@ -30,6 +31,7 @@ class DjangoBotsConfig(AppConfig):
             check_crawler_extra,
             check_ua_cache_size,
             check_ai_block_status,
+            check_ai_block_categories,
             check_unknown_settings,
             check_ai_allow,
             check_crawler_ignore,

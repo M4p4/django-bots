@@ -43,6 +43,15 @@ Default: `[]`
 
 Extra AI bot names, matched the same way as the bundled ones.
 
+## `BOTS_AI_BLOCK_CATEGORIES`
+
+Default: `["training", "search", "assistant"]`
+
+[AI bot categories](ai-bots.md#categories) that `AIBotBlockMiddleware` blocks, from
+`training`, `search`, `assistant` and `agent`. The system check `django_bots.E007`
+reports an unknown category. See
+[Choosing what to block](ai-bots.md#choosing-what-to-block).
+
 ## `BOTS_AI_BLOCK_STATUS`
 
 Default: `403`
@@ -87,6 +96,7 @@ be read one character at a time.
 | `django_bots.E004` | a `BOTS_CRAWLER_EXTRA` pattern that isn't a valid regex |
 | `django_bots.E005` | a `BOTS_UA_CACHE_SIZE` that isn't an integer of 0 or more |
 | `django_bots.E006` | a `BOTS_AI_BLOCK_STATUS` that isn't a status code from 100 to 599 |
+| `django_bots.E007` | a `BOTS_AI_BLOCK_CATEGORIES` entry that isn't a category |
 | `django_bots.W001` | `USER_AGENTS_CACHE`, which is ignored |
 | `django_bots.W002` | a `BOTS_AI_BLOCK_STATUS` below 400, which tells bots the request worked |
 | `django_bots.W003` | a `BOTS_*` setting django-bots doesn't know, usually a typo |

@@ -147,6 +147,38 @@ def test_block_default_response(rf):
     assert response["Cache-Control"] == "private, no-store"
 
 
+CURSOR = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Cursor/1.5.11 Chrome/138.0.7204.100 Electron/37.3.1 Safari/537.36"
+)
+CHATGPT_USER = (
+    "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; "
+    "+https://openai.com/bot"
+)
+
+
+@pytest.mark.parametrize(
+    ("categories", "user_agent", "status"),
+    [
+        (None, CURSOR, 200),
+        (None, CHATGPT_USER, 403),
+        (["training", "search", "assistant", "agent"], CURSOR, 403),
+        (["training"], CHATGPT_USER, 200),
+        (["training"], GPTBOT, 403),
+        ([], GPTBOT, 200),
+    ],
+)
+def test_block_categories(rf, settings, categories, user_agent, status):
+    if categories is not None:
+        settings.BOTS_AI_BLOCK_CATEGORIES = categories
+    middleware = AIBotBlockMiddleware(ok_view)
+
+    response = middleware(rf.get("/", headers={"user-agent": user_agent}))
+
+    assert isinstance(response, HttpResponse)
+    assert response.status_code == status
+
+
 @override_settings(BOTS_AI_ALLOW=["GPTBot"])
 def test_block_allow_list(rf):
     middleware = AIBotBlockMiddleware(ok_view)

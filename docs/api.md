@@ -33,6 +33,12 @@
 
 .. autofunction:: django_bots.ai.match_ai_bot
 
+.. autofunction:: django_bots.ai.ai_bot_category
+
+.. autofunction:: django_bots.ai.categorize
+
+.. autodata:: django_bots.ai.AI_BOT_CATEGORIES
+
 .. autofunction:: django_bots.ai.ai_bot_names
 
 .. autofunction:: django_bots.ai.ai_bots

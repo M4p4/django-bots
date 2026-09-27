@@ -15,6 +15,9 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from typing import Any
+
+from django_bots.ai import categorize
 
 AI_ROBOTS = (
     Path(__file__).resolve().parent.parent
@@ -26,7 +29,12 @@ AI_ROBOTS = (
 
 
 def bot_names(path: Path) -> set[str]:
-    return set(json.loads(path.read_text("utf-8")))
+    return set(read_bots(path))
+
+
+def read_bots(path: Path) -> dict[str, dict[str, Any]]:
+    bots: dict[str, dict[str, Any]] = json.loads(path.read_text("utf-8"))
+    return bots
 
 
 def changes(before: set[str], after: set[str]) -> tuple[list[str], list[str]]:
@@ -40,19 +48,26 @@ def changes(before: set[str], after: set[str]) -> tuple[list[str], list[str]]:
 def _listing(heading: str, names: list[str]) -> list[str]:
     if not names:
         return []
-    return [f"### {heading} ({len(names)})", "", ", ".join(f"`{n}`" for n in names), ""]
+    return [f"### {heading} ({len(names)})", "", ", ".join(names), ""]
 
 
-def summarize(before: set[str], after: set[str]) -> str:
-    added, removed = changes(before, after)
+def summarize(before: set[str], after: dict[str, dict[str, Any]]) -> str:
+    """Summarize the change, with the category each added name gets."""
+    added, removed = changes(before, set(after))
     lines = [f"{len(before)} AI bots before, {len(after)} after.", ""]
     if removed:
         lines += [
             "Removed names are no longer blocked or listed in robots.txt output.",
             "",
         ]
-    lines += _listing("Added", added)
-    lines += _listing("Removed", removed)
+    if added:
+        lines += [
+            "Check the category of each added name. Only `agent` isn't blocked by default;",
+            "correct one in `src/django_bots/data/ai_categories.json`.",
+            "",
+        ]
+    lines += _listing("Added", [f"`{n}` ({categorize(n, after[n])})" for n in added])
+    lines += _listing("Removed", [f"`{n}`" for n in removed])
     if not added and not removed:
         lines.append("No names added or removed; only entry details changed.")
     return "\n".join(lines).rstrip() + "\n"
@@ -69,7 +84,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    print(summarize(bot_names(args.before), bot_names(args.after)), end="")
+    print(summarize(bot_names(args.before), read_bots(args.after)), end="")
 
 
 if __name__ == "__main__":
