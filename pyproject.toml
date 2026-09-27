@@ -45,6 +45,7 @@ test = [
   "pytest",
   "pytest-django",
   "pytest-randomly",
+  "user-agents==2.2",
 ]
 # Sphinx 9 needs Python 3.12 or newer.
 docs = [
