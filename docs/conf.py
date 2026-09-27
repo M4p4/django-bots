@@ -12,7 +12,10 @@ version = release
 
 extensions = [
     "myst_parser",
+    "sphinx.ext.autodoc",
 ]
+
+autodoc_member_order = "bysource"
 
 source_suffix = {".md": "markdown"}
 exclude_patterns = ["_build"]

@@ -1,3 +1,33 @@
 # API reference
 
-This page is not written yet. It fills in as the feature lands.
+## `django_bots.useragent`
+
+```{eval-rst}
+.. automodule:: django_bots.useragent
+   :no-index:
+
+.. autofunction:: django_bots.useragent.parse
+
+.. autoclass:: django_bots.useragent.UserAgent
+   :members:
+
+.. autoclass:: django_bots.useragent.Browser
+
+.. autoclass:: django_bots.useragent.OperatingSystem
+
+.. autoclass:: django_bots.useragent.Device
+```
+
+## `django_bots.utils`
+
+```{eval-rst}
+.. autofunction:: django_bots.utils.get_user_agent
+
+.. autofunction:: django_bots.utils.get_and_set_user_agent
+```
+
+## `django_bots.middleware`
+
+```{eval-rst}
+.. autoclass:: django_bots.middleware.UserAgentMiddleware
+```
