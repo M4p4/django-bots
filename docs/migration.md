@@ -119,7 +119,9 @@ middleware placed after `UserAgentMiddleware`.
 The browser, OS and device fields come from ua-parser 1.x, and the `is_mobile`,
 `is_tablet`, `is_pc`, `is_touch_capable` and `is_email_client` rules are ported from
 user-agents 2.2.0. The test suite runs about 200 real user-agent strings through both
-packages and checks that every attribute except `is_bot` matches. ua-parser's regex
+packages and checks that every attribute except `is_bot` matches. The one other
+difference is Firefox on Android and Firefox OS tablets, which user-agents reports as
+mobile and django-bots as tablets. ua-parser's regex
 data changes between releases, so browser and device names for new or rare user
 agents can still differ from an older install.
 

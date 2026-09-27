@@ -77,6 +77,21 @@ def test_is_bot(ua_string, is_bot):
     assert result.is_bot is is_bot
 
 
+@pytest.mark.parametrize(
+    ("ua_string", "is_tablet"),
+    [
+        ("Mozilla/5.0 (Android 14; Tablet; rv:142.0) Gecko/142.0 Firefox/142.0", True),
+        ("Mozilla/5.0 (Tablet; rv:26.0) Gecko/26.0 Firefox/26.0", True),
+        ("Mozilla/5.0 (Android 14; Mobile; rv:142.0) Gecko/142.0 Firefox/142.0", False),
+    ],
+)
+def test_firefox_tablets(ua_string, is_tablet):
+    result = parse(ua_string)
+
+    assert result.is_tablet is is_tablet
+    assert result.is_mobile is not is_tablet
+
+
 def test_long_user_agent_parses_the_start():
     ua_string = WINDOWS_CHROME + " " + "x" * UA_MAX_LENGTH + " iPhone"
 
