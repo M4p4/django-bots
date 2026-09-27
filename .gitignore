@@ -1,0 +1,18 @@
+*.egg-info/
+*.pyc
+.coverage
+.coverage.*
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.tox/
+.venv/
+__pycache__/
+build/
+dist/
+docs/_build/
+
+# Local planning documents, never pushed
+specs.md
+buildplan.md
+CLAUDE.md
