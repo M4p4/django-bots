@@ -105,17 +105,24 @@ def check_ai_block_view(
     ]
 
 
+def _list_hint(value: object) -> str:
+    if isinstance(value, str) and value:
+        return f"Wrap the value in a list: [{value!r}]."
+    return "Use a list of non-empty strings, or [] for none."
+
+
 def check_list_settings(
     app_configs: Sequence[AppConfig] | None, **kwargs: Any
 ) -> list[CheckMessage]:
     return [
         Error(
-            f"BOTS_{name} must be a list of non-empty strings, not {getattr(bots_settings, name)!r}.",
-            hint='Wrap a single value in a list, for example ["/robots.txt"].',
+            f"BOTS_{name} must be a list of non-empty strings, not {value!r}.",
+            hint=_list_hint(value),
             id="django_bots.E003",
         )
         for name in LIST_SETTINGS
         if _valid_list(name) is None
+        for value in [getattr(bots_settings, name)]
     ]
 
 

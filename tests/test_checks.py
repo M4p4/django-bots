@@ -84,6 +84,22 @@ def test_list_setting_invalid(name, value):
 
 
 @pytest.mark.parametrize(
+    ("value", "hint"),
+    [
+        ("MyBot", "Wrap the value in a list: ['MyBot']."),
+        ("", "Use a list of non-empty strings, or [] for none."),
+        (None, "Use a list of non-empty strings, or [] for none."),
+        (["ok", ""], "Use a list of non-empty strings, or [] for none."),
+    ],
+)
+def test_list_setting_hint(value, hint):
+    with override_settings(BOTS_AI_EXTRA=value):
+        result = run_checks()
+
+    assert result[0].hint == hint
+
+
+@pytest.mark.parametrize(
     "settings",
     [
         {"BOTS_CRAWLER_EXTRA": [r"^acme-checker/", "my-monitor"]},
