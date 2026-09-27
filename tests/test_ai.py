@@ -47,6 +47,7 @@ IPHONE = (
 # "spider" in the URL and "openai" in the email match entries when links aren't removed.
 BAIDUSPIDER = "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)"
 CONTACT_ONLY = "Mozilla/5.0 (compatible; Fetcher/1.0; +mailto:crawler@openai.com)"
+BARE_URL = "MyCrawler/1.0 (+openai.com/gptbot)"
 NEWBOT = "Mozilla/5.0 (compatible; NewBot/1.0)"
 
 
@@ -82,7 +83,16 @@ def test_match(ua_string, expected):
 
 @pytest.mark.parametrize(
     "ua_string",
-    [GOOGLEBOT, WINDOWS_CHROME, IPHONE, "", "xGPTBot", BAIDUSPIDER, CONTACT_ONLY],
+    [
+        GOOGLEBOT,
+        WINDOWS_CHROME,
+        IPHONE,
+        "",
+        "xGPTBot",
+        BAIDUSPIDER,
+        CONTACT_ONLY,
+        BARE_URL,
+    ],
 )
 def test_no_match(ua_string):
     assert match_ai_bot(ua_string) is None
@@ -95,16 +105,20 @@ def test_no_match(ua_string):
         ("Fetcher/1.0 (+crawler@openai.com)", "Fetcher/1.0 ( )"),
         ("Fetcher/1.0 (a.b+c@openai.com)", "Fetcher/1.0 ( )"),
         ("Fetcher/1.0 (+https://openai.com/bot)", "Fetcher/1.0 (+ )"),
+        ("Fetcher/1.0 (+openai.com/bot)", "Fetcher/1.0 (+ )"),
+        ("Fetcher/1.0 (+docs.openai.com/bots/; x)", "Fetcher/1.0 (+ ; x)"),
+        ("GPTBot/1.2 (openai.com)", "GPTBot/1.2 (openai.com)"),
     ],
 )
 def test_links_are_removed(ua_string, expected):
     assert URL_OR_EMAIL.sub(" ", ua_string) == expected
 
 
-def test_link_removal_is_linear():
+@pytest.mark.parametrize("ua_string", ["a" * 20_000, "a." * 10_000, "a-" * 10_000])
+def test_link_removal_is_linear(ua_string):
     start = time.perf_counter()
 
-    URL_OR_EMAIL.sub(" ", "a" * 20_000)
+    URL_OR_EMAIL.sub(" ", ua_string)
 
     assert time.perf_counter() - start < 0.1
 
