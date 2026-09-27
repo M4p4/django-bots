@@ -5,6 +5,7 @@
 - Fixed the template filters raising `AttributeError` when the `request` variable isn't a request, for example a dict in an email context or an object with a `user_agent` string field. They return `False` like they do without a `request`.
 - Links without a scheme, such as `+openai.com/gptbot`, are removed before AI bot matching like `https://` links, so they no longer match the operator's name (here `OpenAI`).
 - Firefox on Android tablets (`Android 14; Tablet; ... Firefox/...`) is `is_tablet` instead of `is_mobile`. This differs from django-user-agents, which reports these tablets as mobile.
+- `parse()` accepts bytes, such as a header from an ASGI scope, and decodes them as Latin-1 like Django does. It raised `TypeError` before.
 
 ## 1.1.0 (2026-09-27)
 
