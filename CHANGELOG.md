@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fixed AI bot matching taking quadratic time on long user agents without spaces. A single `User-Agent` header of a few kilobytes could keep a worker busy for seconds, and `AIBotBlockMiddleware` checks every request.
+- Only the first 512 characters of a user agent are parsed and matched. Real user agents are far shorter, and the limit bounds the work for any header.
+
 ## 1.0.0 (2026-09-27)
 
 First release.

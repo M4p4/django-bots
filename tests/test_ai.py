@@ -1,11 +1,21 @@
 from __future__ import annotations
 
+import time
+
 import pytest
 from django.test import override_settings
 
 import django_bots
 from django_bots import ai
-from django_bots.ai import ai_bot_names, ai_bots, is_ai_bot, match_ai_bot, robots_rules
+from django_bots.ai import (
+    URL_OR_EMAIL,
+    ai_bot_names,
+    ai_bots,
+    is_ai_bot,
+    match_ai_bot,
+    robots_rules,
+)
+from django_bots.conf import UA_MAX_LENGTH
 from django_bots.useragent import parse
 
 GPTBOT = (
@@ -77,6 +87,35 @@ def test_match(ua_string, expected):
 def test_no_match(ua_string):
     assert match_ai_bot(ua_string) is None
     assert is_ai_bot(ua_string) is False
+
+
+@pytest.mark.parametrize(
+    ("ua_string", "expected"),
+    [
+        ("Fetcher/1.0 (+crawler@openai.com)", "Fetcher/1.0 ( )"),
+        ("Fetcher/1.0 (a.b+c@openai.com)", "Fetcher/1.0 ( )"),
+        ("Fetcher/1.0 (+https://openai.com/bot)", "Fetcher/1.0 (+ )"),
+    ],
+)
+def test_links_are_removed(ua_string, expected):
+    assert URL_OR_EMAIL.sub(" ", ua_string) == expected
+
+
+def test_link_removal_is_linear():
+    start = time.perf_counter()
+
+    URL_OR_EMAIL.sub(" ", "a" * 20_000)
+
+    assert time.perf_counter() - start < 0.1
+
+
+@pytest.mark.parametrize(
+    ("padding", "expected"), [(0, "GPTBot"), (UA_MAX_LENGTH, None)]
+)
+def test_only_the_start_is_matched(padding, expected):
+    ua_string = "x" * padding + " GPTBot/1.2"
+
+    assert match_ai_bot(ua_string) == expected
 
 
 def test_duplicate_spellings_report_the_first():

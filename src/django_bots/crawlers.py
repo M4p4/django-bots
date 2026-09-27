@@ -14,7 +14,7 @@ from functools import lru_cache
 
 from crawleruseragents import CRAWLER_USER_AGENTS_DATA
 
-from django_bots.conf import bots_settings
+from django_bots.conf import UA_MAX_LENGTH, bots_settings
 
 __all__ = ["crawler_patterns", "is_crawler"]
 
@@ -53,4 +53,4 @@ def is_crawler(ua_string: str) -> bool:
         tuple(bots_settings.CRAWLER_EXTRA),
         tuple(bots_settings.CRAWLER_IGNORE),
     )
-    return matcher(ua_string)
+    return matcher(ua_string[:UA_MAX_LENGTH])

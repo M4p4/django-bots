@@ -6,6 +6,7 @@ from django.test import override_settings
 from ua_parser import CachingResolver
 
 from django_bots import useragent
+from django_bots.conf import UA_MAX_LENGTH
 from django_bots.useragent import Browser, Device, OperatingSystem, UserAgent, parse
 
 IPHONE = (
@@ -74,6 +75,16 @@ def test_is_bot(ua_string, is_bot):
     result = parse(ua_string)
 
     assert result.is_bot is is_bot
+
+
+def test_long_user_agent_parses_the_start():
+    ua_string = WINDOWS_CHROME + " " + "x" * UA_MAX_LENGTH + " iPhone"
+
+    result = parse(ua_string)
+
+    assert result.ua_string == ua_string
+    assert result.browser.family == "Chrome"
+    assert result.os.family == "Windows"
 
 
 def test_user_agent_constructor_parses():

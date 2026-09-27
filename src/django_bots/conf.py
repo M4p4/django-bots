@@ -11,9 +11,12 @@ from typing import TypeVar
 
 from django.conf import settings
 
-__all__ = ["bots_settings"]
+__all__ = ["UA_MAX_LENGTH", "bots_settings"]
 
 T = TypeVar("T")
+
+UA_MAX_LENGTH = 512
+"""Only this many characters of a user agent are parsed and matched."""
 
 
 def _get(name: str, default: T) -> T:

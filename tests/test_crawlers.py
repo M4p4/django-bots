@@ -4,6 +4,7 @@ import pytest
 from django.test import override_settings
 
 from django_bots import crawlers
+from django_bots.conf import UA_MAX_LENGTH
 from django_bots.crawlers import crawler_patterns, is_crawler
 from django_bots.useragent import parse
 
@@ -54,6 +55,13 @@ def test_crawler(ua_string):
 @pytest.mark.parametrize("ua_string", HUMANS)
 def test_human(ua_string):
     assert is_crawler(ua_string) is False
+
+
+@pytest.mark.parametrize(("padding", "expected"), [(0, True), (UA_MAX_LENGTH, False)])
+def test_only_the_start_is_matched(padding, expected):
+    ua_string = "x" * padding + " " + GOOGLEBOT
+
+    assert is_crawler(ua_string) is expected
 
 
 def test_extra_setting():

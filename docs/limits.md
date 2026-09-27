@@ -20,6 +20,13 @@ device models from these browsers are less precise than they used to be. The
 User-Agent Client Hints headers carry the full detail, and django-bots doesn't read
 them.
 
+## Long user agents
+
+Only the first 512 characters of a user agent are parsed and matched. Real user agents
+are well under that, and the limit keeps the work per request small whatever a client
+sends. A bot name that appears only after the first 512 characters isn't detected.
+`request.user_agent.ua_string` still holds the full header.
+
 ## robots.txt is voluntary
 
 robots.txt rules are a request, not a barrier. Well-behaved crawlers follow them, and
