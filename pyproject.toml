@@ -60,7 +60,7 @@ django61 = [ "django>=6.1,<6.2; python_version>='3.12'" ]
 
 [tool.setuptools]
 packages.find.where = [ "src" ]
-package-data.django_bots = [ "data/*", "py.typed" ]
+package-data.django_bots = [ "data/*", "py.typed", "templates/django_bots/*" ]
 
 [tool.uv]
 # uv only auto-installs the `dev` group, so name the groups a bare `uv run`

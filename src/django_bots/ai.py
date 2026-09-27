@@ -20,7 +20,7 @@ from typing import Any
 
 from django_bots.conf import bots_settings
 
-__all__ = ["ai_bot_names", "ai_bots", "is_ai_bot", "match_ai_bot"]
+__all__ = ["ai_bot_names", "ai_bots", "is_ai_bot", "match_ai_bot", "robots_rules"]
 
 
 def _read_data(name: str) -> Any:
@@ -81,3 +81,14 @@ def match_ai_bot(ua_string: str) -> str | None:
 def is_ai_bot(ua_string: str) -> bool:
     """Whether the user-agent string matches an AI bot."""
     return match_ai_bot(ua_string) is not None
+
+
+def robots_rules() -> str:
+    """Return a robots.txt group that disallows every AI bot in ``ai_bot_names()``.
+
+    Returns an empty string when no names are left.
+    """
+    names = ai_bot_names()
+    if not names:
+        return ""
+    return "\n".join([*(f"User-agent: {name}" for name in names), "Disallow: /"])

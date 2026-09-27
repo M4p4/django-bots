@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import pytest
 from django.template import Context, Template
+from django.test import override_settings
+
+from django_bots.ai import robots_rules
 
 IPHONE = (
     "Mozilla/5.0 (iPhone; CPU iPhone OS 5_1 like Mac OS X) AppleWebKit/534.46 "
@@ -87,3 +90,24 @@ def test_bots_filters_without_request():
     result = Template(BOTS_TEMPLATE).render(Context())
 
     assert result == "False False False False False False False"
+
+
+def test_ai_robots_rules_tag():
+    result = Template("{% load bots %}{% ai_robots_rules %}").render(Context())
+
+    assert result == robots_rules()
+    assert result.endswith("\nDisallow: /")
+
+
+def test_ai_robots_rules_tag_is_not_escaped():
+    with override_settings(BOTS_AI_EXTRA=["Bot<&>"]):
+        result = Template("{% load bots %}{% ai_robots_rules %}").render(Context())
+
+    assert "User-agent: Bot<&>\n" in result
+
+
+def test_ai_robots_rules_tag_allow_setting():
+    with override_settings(BOTS_AI_ALLOW=["GPTBot"]):
+        result = Template("{% load bots %}{% ai_robots_rules %}").render(Context())
+
+    assert "GPTBot" not in result

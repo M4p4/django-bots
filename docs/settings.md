@@ -28,7 +28,8 @@ exactly as it's written in the list.
 
 Default: `[]`
 
-AI bot names to remove from the list, compared case-insensitively. See
+AI bot names to remove from the list, compared case-insensitively. They're neither
+detected nor listed in the robots.txt rules. See
 [Allowing and adding bots](ai-bots.md#allowing-and-adding-bots).
 
 ## `BOTS_AI_EXTRA`

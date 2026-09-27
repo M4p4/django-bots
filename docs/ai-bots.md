@@ -77,6 +77,55 @@ is_bot = device.family == "Spider" or is_crawler or is_ai_bot
 In django-user-agents, `is_bot` was true only for a spider device, which missed many
 bots. This is the one place where django-bots behaves differently.
 
+## Serving robots.txt
+
+Add the `robots_txt` view to your URLs:
+
+```python
+from django.urls import path
+
+from django_bots.views import robots_txt
+
+urlpatterns = [
+    path("robots.txt", robots_txt),
+    # ...
+]
+```
+
+It serves one group that disallows every AI bot, as `text/plain` with
+`Cache-Control: max-age=86400`:
+
+```text
+User-agent: AddSearchBot
+User-agent: AgentTimes
+...
+User-agent: ZanistaBot
+Disallow: /
+```
+
+Every name in the list gets a line, including the robots.txt-only tokens and names
+that upstream lists in two spellings. The view answers `GET` and `HEAD` and returns
+405 for other methods.
+
+To add your own rules and a `Sitemap:` line, create a `django_bots/robots.txt`
+template in your project that extends the bundled one and fills the `rules` block:
+
+```django
+{% extends "django_bots/robots.txt" %}{% block rules %}
+User-agent: *
+Disallow: /admin/
+
+Sitemap: https://example.com/sitemap.xml
+{% endblock %}
+```
+
+Your project's template directories must come before the app directories, which is
+the default when `DIRS` is set and `APP_DIRS` is on. Django lets a template extend the
+template of the same name it overrides.
+
+If you already serve robots.txt from your own template, print the rules with the
+[`ai_robots_rules` tag](templates.md#ai_robots_rules) instead.
+
 ## Allowing and adding bots
 
 `BOTS_AI_ALLOW` removes names from the list. Use it for bots you want to keep, for
@@ -87,10 +136,11 @@ BOTS_AI_ALLOW = ["OAI-SearchBot"]
 ```
 
 Names are compared case-insensitively, and the list in use is available from
-`django_bots.ai.ai_bot_names()`.
+`django_bots.ai.ai_bot_names()`. Allowed names are also left out of the robots.txt
+rules.
 
 `BOTS_AI_EXTRA` adds names that aren't in ai.robots.txt yet. They match the same way
-as the bundled names:
+as the bundled names and get a line in the robots.txt rules:
 
 ```python
 BOTS_AI_EXTRA = ["NewAIBot"]
