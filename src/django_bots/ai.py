@@ -18,7 +18,7 @@ from functools import lru_cache
 from importlib.resources import files
 from typing import Any
 
-from django_bots.conf import bots_settings
+from django_bots.conf import UA_MAX_LENGTH, bots_settings
 
 __all__ = ["ai_bot_names", "ai_bots", "is_ai_bot", "match_ai_bot", "robots_rules"]
 
@@ -42,7 +42,8 @@ def ai_bot_names() -> list[str]:
 
 
 # Contact links name the operator, not the bot: "openai.com" would match "OpenAI".
-URL_OR_EMAIL = re.compile(r"(?:https?://|www\.)[^\s;)]+|[\w.+-]+@[\w.-]+")
+# The lookbehind starts an email only at the start of a word, which keeps it linear.
+URL_OR_EMAIL = re.compile(r"(?:https?://|www\.)[^\s;)]+|(?<![\w.+-])[\w.+-]+@[\w.-]+")
 
 
 @lru_cache(maxsize=1)
@@ -75,7 +76,7 @@ def match_ai_bot(ua_string: str) -> str | None:
         tuple(bots_settings.AI_ALLOW),
         tuple(bots_settings.AI_EXTRA),
     )
-    return matcher(ua_string)
+    return matcher(ua_string[:UA_MAX_LENGTH])
 
 
 def is_ai_bot(ua_string: str) -> bool:

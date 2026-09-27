@@ -20,7 +20,7 @@ from ua_parser import Cache, CachingResolver, Resolver
 from ua_parser.caching import Lru
 
 from django_bots.ai import match_ai_bot
-from django_bots.conf import bots_settings
+from django_bots.conf import UA_MAX_LENGTH, bots_settings
 from django_bots.crawlers import is_crawler
 
 __all__ = ["Browser", "Device", "OperatingSystem", "UserAgent", "parse"]
@@ -163,7 +163,7 @@ class UserAgent:
     def __init__(self, user_agent_string: str) -> None:
         result = (
             _get_parser(bots_settings.UA_CACHE_SIZE)
-            .parse(user_agent_string)
+            .parse(user_agent_string[:UA_MAX_LENGTH])
             .with_defaults()
         )
         self.ua_string = user_agent_string
