@@ -37,6 +37,8 @@ dependencies = [
   "ua-parser>=1,<2",
 ]
 urls.Changelog = "https://github.com/M4p4/django-bots/blob/main/CHANGELOG.md"
+urls.Documentation = "https://djangobots.readthedocs.io/"
+urls.Issues = "https://github.com/M4p4/django-bots/issues"
 urls.Repository = "https://github.com/M4p4/django-bots"
 
 [dependency-groups]
