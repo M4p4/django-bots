@@ -5,7 +5,7 @@ The bot list is vendored from `ai.robots.txt
 ai.robots.txt, released under the MIT license.
 
 Each name matches case-insensitively at word boundaries in the user-agent string,
-after URLs and email addresses are removed from it. Results are cached per string in
+after URLs (with or without a scheme) and email addresses are removed from it. Results are cached per string in
 an LRU of ``BOTS_UA_CACHE_SIZE`` entries.
 """
 
@@ -58,7 +58,11 @@ def ai_bot_names() -> list[str]:
 
 
 # Contact links name the operator, not the bot: "openai.com" would match "OpenAI".
-URL_OR_EMAIL = re.compile(r"(?:https?://|www\.)[^\s;)]+|(?<![\w.+-])[\w.+-]+@[\w.-]+")
+URL_OR_EMAIL = re.compile(
+    r"(?:https?://|www\.)[^\s;)]+"
+    r"|(?<![\w.+-])[\w.+-]+@[\w.-]+"
+    r"|(?<![\w.-])[\w-]+(?:\.[\w-]+)+/[^\s;)]*"
+)
 
 
 @lru_cache(maxsize=1)

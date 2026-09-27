@@ -65,8 +65,8 @@ Upstream lists a few bots a second time with a version, such as `MistralAI-User`
 `MistralAI-User/1.0`. `ai_bot` reports the name without the version for every version,
 so logs and stats group them together.
 
-URLs and email addresses are removed before matching. They name the operator, not the
-bot: GPTBot's user agent links to `openai.com`, which would otherwise match the
+URLs, including links without `https://` such as `openai.com/bot`, and email addresses
+are removed before matching. They name the operator, not the bot: GPTBot's user agent links to `openai.com`, which would otherwise match the
 separate `OpenAI` entry, and Baidu's search crawler links to a page named
 `spider.html`, which would match the `Spider` entry.
 
