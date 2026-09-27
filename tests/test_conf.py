@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import re
+from pathlib import Path
+
 import pytest
 from django.apps import apps
 from django.test import override_settings
@@ -59,5 +62,9 @@ def test_app_config():
     assert config.verbose_name == "Bots"
 
 
-def test_version():
-    assert django_bots.__version__ == "0.1.0.dev0"
+def test_version_matches_pyproject():
+    pyproject = Path(__file__).parent.parent / "pyproject.toml"
+    match = re.search(r'^version = "([^"]+)"$', pyproject.read_text("utf-8"), re.M)
+
+    assert match is not None
+    assert django_bots.__version__ == match.group(1)

@@ -71,3 +71,23 @@ commands for the release.
 
 You can also run the workflow by hand from the Actions tab, optionally with a specific
 release tag.
+
+## Releases
+
+Releases are published to PyPI by the CI workflow when a version tag is pushed. To
+make one:
+
+1. In a pull request, set the new version in `pyproject.toml` and rename the entries
+   under `## Unreleased` in `CHANGELOG.md` to a `## X.Y.Z (YYYY-MM-DD)` section. Keep
+   the empty `## Unreleased` heading on top.
+2. After the merge, tag the merge commit on `main` with the bare version and push the
+   tag:
+
+   ```console
+   $ git tag 1.0.1
+   $ git push origin 1.0.1
+   ```
+
+CI runs every check on the tag. When they all pass, the Release job makes sure the tag
+matches the version in the built wheel and publishes the same files to PyPI with
+trusted publishing. Nothing is rebuilt, and no PyPI token is stored in the repository.

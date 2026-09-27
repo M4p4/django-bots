@@ -442,7 +442,7 @@ wheels = [
 
 [[package]]
 name = "django-bots"
-version = "0.1.0.dev0"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "crawler-user-agents" },
@@ -496,7 +496,7 @@ test = [
     { name = "pytest" },
     { name = "pytest-django" },
     { name = "pytest-randomly" },
-    { name = "user-agents", specifier = "==2.2.0" },
+    { name = "user-agents", specifier = "==2.2" },
 ]
 
 [[package]]
