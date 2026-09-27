@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fixed `AIBotBlockMiddleware` returning an unrendered `TemplateResponse` from `BOTS_AI_BLOCK_VIEW`, which raised `ContentNotRenderedError`. Block views built on `TemplateView` and other generic views now work.
+- The system check `django_bots.E002` reports a `BOTS_AI_BLOCK_VIEW` that points at a class instead of a view, which failed on the first blocked request.
+
 ## 1.0.1 (2026-09-27)
 
 - Fixed AI bot matching taking quadratic time on long user agents without spaces. A single `User-Agent` header of a few kilobytes could keep a worker busy for seconds, and `AIBotBlockMiddleware` checks every request.

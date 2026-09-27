@@ -156,9 +156,22 @@ BOTS_AI_BLOCK_STATUS = 429
 BOTS_AI_BLOCK_VIEW = "myproject.views.ai_bot_blocked"
 ```
 
-The view gets the request and returns a response. It can be sync or async. The path
-is imported once, when the middleware loads, and the system check `django_bots.E002`
-reports a path that can't be imported.
+The view gets the request and returns a response. It can be sync or async, and a
+`TemplateResponse` is rendered for you. For a class-based view, point the setting at a
+name set to its `as_view()`:
+
+```python
+# myproject/views.py
+class AIBotBlockedView(TemplateView):
+    template_name = "ai_bot_blocked.html"
+
+
+ai_bot_blocked = AIBotBlockedView.as_view()
+```
+
+The path is imported once, when the middleware loads, and the system check
+`django_bots.E002` reports a path that can't be imported, isn't callable or is a
+class.
 
 Requests to `/robots.txt` are never blocked, so bots can still read your rules.
 `BOTS_AI_BLOCK_EXEMPT_PATHS` sets the full list of paths to let through. Each path is
