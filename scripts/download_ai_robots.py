@@ -21,8 +21,6 @@ from pathlib import Path
 from typing import Any
 
 RAW_URL = "https://raw.githubusercontent.com/ai-robots-txt/ai.robots.txt/{tag}/{path}"
-# The sync workflow runs this unattended, so a stalled endpoint must fail
-# rather than hang until the job timeout.
 TIMEOUT = 60
 DATA_DIR = Path(__file__).resolve().parent.parent / "src" / "django_bots" / "data"
 
