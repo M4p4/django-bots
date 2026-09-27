@@ -5,15 +5,12 @@ on:
     branches:
     - main
     tags:
-    # Dotted version tags only (1.0.0), so a bare tag can't start a release.
     - '*.*.*'
   pull_request:
-  # The AI robots sync workflow dispatches CI on its pull request branch.
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  # Never cancel a tag build: it's the one that publishes to PyPI.
   cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 permissions:
@@ -58,9 +55,6 @@ jobs:
       with:
         enable-cache: true
         python-version: ${{ matrix.python-version }}
-    # Pinned like the action SHAs above: tox-uv decides which dependency groups
-    # each env installs, so an unreviewed upgrade can silently change what is
-    # actually tested.
     - name: Run tox targets for Python ${{ matrix.python-version }}
       run: uvx --with tox-uv==1.35.2 tox==4.57.0 run -f py$(echo ${{ matrix.python-version }} | tr -d .)
     - name: Upload coverage data
@@ -126,7 +120,6 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    # Publishes the artifact every check ran against; this job never rebuilds.
     needs: [ lint, tests, coverage, build, docs ]
     if: startsWith(github.ref, 'refs/tags/')
     environment: release
