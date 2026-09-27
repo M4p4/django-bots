@@ -1,0 +1,17 @@
+"""Bot detection filters, plus every filter from the ``user_agents`` library."""
+
+from __future__ import annotations
+
+from django import template
+from django.http import HttpRequest
+
+from django_bots.templatetags import user_agents
+from django_bots.utils import get_and_set_user_agent
+
+register = template.Library()
+register.filters.update(user_agents.register.filters)
+
+
+@register.filter
+def is_crawler(request: HttpRequest) -> bool:
+    return get_and_set_user_agent(request).is_crawler

@@ -27,6 +27,27 @@ The template context needs `request`, which the
 once and set it on the request. When `request` isn't in the context, every filter
 returns `False`.
 
+## `bots` filters
+
+The `bots` library has the `is_crawler` filter, plus every filter from `user_agents`,
+so one `{% load bots %}` is enough:
+
+```django
+{% load bots %}
+
+{% if request|is_crawler %}...{% endif %}
+{% if request|is_mobile %}...{% endif %}
+```
+
+| Filter | Returns |
+|---|---|
+| `is_crawler` | `request.user_agent.is_crawler` |
+
+Like the `user_agents` filters, they need `request` in the context and return `False`
+without it.
+
+## Library name clash
+
 Don't keep `django_user_agents` in `INSTALLED_APPS` next to `django_bots`. Both apps
 provide a `user_agents` library, and the system check `django_bots.E001` reports the
 clash.

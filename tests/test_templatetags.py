@@ -53,3 +53,32 @@ def test_filters_without_request():
     result = Template(TEMPLATE).render(Context())
 
     assert result == "False False False False False"
+
+
+BOTS_TEMPLATE = (
+    "{% load bots %}"
+    "{{ request|is_crawler }} {{ request|is_mobile }} {{ request|is_tablet }} "
+    "{{ request|is_touch_capable }} {{ request|is_pc }} {{ request|is_bot }}"
+)
+
+
+@pytest.mark.parametrize(
+    ("ua_string", "expected"),
+    [
+        (IPHONE, "False True False True False False"),
+        (WINDOWS_CHROME, "False False False False True False"),
+        (GOOGLEBOT, "True False False False False True"),
+    ],
+)
+def test_bots_filters(rf, ua_string, expected):
+    request = rf.get("/", HTTP_USER_AGENT=ua_string)
+
+    result = Template(BOTS_TEMPLATE).render(Context({"request": request}))
+
+    assert result == expected
+
+
+def test_bots_filters_without_request():
+    result = Template(BOTS_TEMPLATE).render(Context())
+
+    assert result == "False False False False False False"

@@ -66,6 +66,7 @@ django-user-agents is built on.
 | `is_touch_capable` | `True` | A device with a touch screen |
 | `is_email_client` | `False` | An email client such as Outlook or Thunderbird |
 | `is_bot` | `False` | ua-parser classifies the device as a spider |
+| `is_crawler` | `False` | Matches a [crawler pattern](crawlers.md) |
 
 `browser`, `os` and `device` are named tuples. Version parts made of digits are
 ints, and other parts stay strings, so Windows RT gives `version=("RT",)`.
