@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `django_bots.middleware.AIBotBlockMiddleware` answers AI bots with a 403, for sync and async requests. `BOTS_AI_BLOCK_STATUS` changes the status, `BOTS_AI_BLOCK_VIEW` renders your own response, and `BOTS_AI_BLOCK_EXEMPT_PATHS` lets paths through (`/robots.txt` by default). The system check `django_bots.E002` reports a `BOTS_AI_BLOCK_VIEW` that can't be imported.
 - A `django_bots.views.robots_txt` view that disallows every AI bot, rendered from the `django_bots/robots.txt` template with a `rules` block for your own rules. The `ai_robots_rules` tag in the `bots` library prints the same rules into your own template, and `django_bots.ai.robots_rules()` returns them as a string.
 - AI bot detection based on ai.robots.txt v1.52, bundled with the package: `django_bots.ai.is_ai_bot()` and `match_ai_bot()`, `request.user_agent.is_ai_bot` and `ai_bot`, and the `is_ai_bot` filter in the `bots` library. `BOTS_AI_ALLOW` removes names and `BOTS_AI_EXTRA` adds them. `django_bots.DATA_VERSIONS` lists the bundled and installed data versions.
 - `is_bot` is now also true for crawlers and AI bots, not only for spider devices. This is the one behavior difference from django-user-agents.

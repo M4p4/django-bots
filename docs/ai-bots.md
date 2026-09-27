@@ -126,6 +126,47 @@ template of the same name it overrides.
 If you already serve robots.txt from your own template, print the rules with the
 [`ai_robots_rules` tag](templates.md#ai_robots_rules) instead.
 
+## Blocking AI bots
+
+robots.txt only asks. To refuse AI bots outright, add `AIBotBlockMiddleware`:
+
+```python
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django_bots.middleware.AIBotBlockMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    # ...
+]
+```
+
+Put it high in the list, before sessions, authentication and anything else that does
+work for a request. It doesn't need `UserAgentMiddleware`: it checks the raw
+user-agent string against the same list as `is_ai_bot`, without parsing the browser,
+OS and device.
+
+A blocked request gets a plain-text `Forbidden` response with status 403. Change the
+status with `BOTS_AI_BLOCK_STATUS`, or render your own response with a view:
+
+```python
+BOTS_AI_BLOCK_STATUS = 429
+BOTS_AI_BLOCK_VIEW = "myproject.views.ai_bot_blocked"
+```
+
+The view gets the request and returns a response. It can be sync or async. The path
+is imported once, when the middleware loads, and the system check `django_bots.E002`
+reports a path that can't be imported.
+
+Requests to `/robots.txt` are never blocked, so bots can still read your rules.
+`BOTS_AI_BLOCK_EXEMPT_PATHS` sets the full list of paths to let through. Each path is
+compared exactly with `request.path`:
+
+```python
+BOTS_AI_BLOCK_EXEMPT_PATHS = ["/robots.txt", "/llms.txt"]
+```
+
+`BOTS_AI_ALLOW` applies to the middleware too, so an allowed bot is neither disallowed
+in robots.txt nor blocked.
+
 ## Allowing and adding bots
 
 `BOTS_AI_ALLOW` removes names from the list. Use it for bots you want to keep, for

@@ -1,4 +1,4 @@
-"""System checks for settings left over from django-user-agents."""
+"""System checks for django-bots settings and settings left over from django-user-agents."""
 
 from __future__ import annotations
 
@@ -8,8 +8,15 @@ from typing import Any
 from django.apps import AppConfig, apps
 from django.conf import settings
 from django.core.checks import CheckMessage, Error, Warning
+from django.utils.module_loading import import_string
 
-__all__ = ["check_django_user_agents_installed", "check_user_agents_cache"]
+from django_bots.conf import bots_settings
+
+__all__ = [
+    "check_ai_block_view",
+    "check_django_user_agents_installed",
+    "check_user_agents_cache",
+]
 
 
 def check_user_agents_cache(
@@ -36,5 +43,28 @@ def check_django_user_agents_installed(
             "django_user_agents and django_bots are both in INSTALLED_APPS.",
             hint="Remove django_user_agents. Both apps provide the user_agents template library.",
             id="django_bots.E001",
+        )
+    ]
+
+
+def check_ai_block_view(
+    app_configs: Sequence[AppConfig] | None, **kwargs: Any
+) -> list[CheckMessage]:
+    path = bots_settings.AI_BLOCK_VIEW
+    if path is None:
+        return []
+    try:
+        view = import_string(path)
+    except ImportError as error:
+        problem = str(error)
+    else:
+        if callable(view):
+            return []
+        problem = f"{path!r} is not callable."
+    return [
+        Error(
+            f"BOTS_AI_BLOCK_VIEW can't be used: {problem}",
+            hint="Set it to the dotted path of a view, or to None for the default response.",
+            id="django_bots.E002",
         )
     ]

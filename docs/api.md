@@ -65,4 +65,6 @@
 
 ```{eval-rst}
 .. autoclass:: django_bots.middleware.UserAgentMiddleware
+
+.. autoclass:: django_bots.middleware.AIBotBlockMiddleware
 ```

@@ -26,6 +26,14 @@ robots.txt rules are a request, not a barrier. Well-behaved crawlers follow them
 others ignore them. ai.robots.txt records, where known, whether each bot respects
 robots.txt, in the `respect` field of `django_bots.ai.ai_bots()`.
 
+## Caches in front of Django
+
+`AIBotBlockMiddleware` only sees requests that reach Django. A CDN or reverse proxy
+that caches pages serves them to AI bots from the cache, and it may also cache the
+block response and serve it to other visitors. Block AI bots at the cache as well, or
+keep the block response out of it, for example with a view in `BOTS_AI_BLOCK_VIEW`
+that sets `Cache-Control: private`.
+
 ## Broad entries
 
 ai.robots.txt lists some bots that you may not think of as AI bots, and a few names
