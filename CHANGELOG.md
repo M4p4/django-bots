@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.1.0 (2026-09-27)
+
 - New system checks for settings. Errors report list settings that aren't lists of non-empty strings (`django_bots.E003`), invalid `BOTS_CRAWLER_EXTRA` patterns (`E004`), a `BOTS_UA_CACHE_SIZE` that isn't an integer of 0 or more (`E005`) and a `BOTS_AI_BLOCK_STATUS` outside 100 to 599 (`E006`). Before, these broke detection silently or raised on requests. Warnings report a block status below 400 (`W002`), unknown `BOTS_*` settings (`W003`), `BOTS_AI_ALLOW` names that aren't in the list (`W004`) and `BOTS_CRAWLER_IGNORE` entries that match no pattern (`W005`).
 - `ai_bot` reports the same name for every version of a bot that upstream also lists with a version. `MistralAI-User/1.0` used to report `"MistralAI-User/1.0"` and `MistralAI-User/1.1` `"MistralAI-User"`; both now report `"MistralAI-User"`. The same applies to `iaskspider` and `Brightbot`. Values logged or stored from `ai_bot` change for these bots.
 - `BOTS_AI_ALLOW` also allows a name's spellings with a version, so allowing `MistralAI-User` no longer leaves `MistralAI-User/1.0` blocked and listed in robots.txt.
