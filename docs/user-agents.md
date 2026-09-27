@@ -1,5 +1,38 @@
 # User agents
 
+## In views
+
+Add the middleware to read the parsed user agent from `request.user_agent`:
+
+```python
+MIDDLEWARE = [
+    # ...
+    "django_bots.middleware.UserAgentMiddleware",
+]
+```
+
+```python
+def home(request):
+    if request.user_agent.is_mobile:
+        ...
+```
+
+The middleware works with sync and async views. It parses the `User-Agent` header the
+first time `request.user_agent` is read, so requests that never read it cost nothing.
+
+Without the middleware, the helpers in `django_bots.utils` do the same job:
+
+```python
+from django_bots.utils import get_and_set_user_agent, get_user_agent
+
+user_agent = get_user_agent(request)  # parse the header
+user_agent = get_and_set_user_agent(request)  # reuse request.user_agent, or set it
+```
+
+In templates, use the [filters](templates.md).
+
+## Parsing a string
+
 `django_bots.useragent.parse()` turns a user-agent string into browser, OS and device
 details:
 
