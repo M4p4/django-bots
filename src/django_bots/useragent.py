@@ -39,7 +39,6 @@ PC_OS_FAMILIES = frozenset({"Windows 95", "Windows 98", "Solaris"})
 MOBILE_OS_FAMILIES = frozenset(
     {
         "Windows Phone",
-        # Older ua-parser data called it "Windows Phone OS".
         "Windows Phone OS",
         "Symbian OS",
         "Bada",
@@ -64,7 +63,6 @@ TABLET_DEVICE_FAMILIES = frozenset(
     {
         "iPad",
         "BlackBerry Playbook",
-        # Older ua-parser data spelled it "Blackberry".
         "Blackberry Playbook",
         "Kindle",
         "Kindle Fire",
@@ -146,8 +144,6 @@ def _parse_version(*parts: str | None) -> tuple[Version, str]:
 @lru_cache(maxsize=1)
 def _get_parser(cache_size: int) -> ua_parser.Parser:
     """Build the parser, with a new cache whenever the cache size changes."""
-    # ua-parser ships lazy matchers for the compiled backends and eager ones
-    # for the pure Python backend, and picks them the same way.
     if ua_parser.BestAvailableResolver is ua_parser.BasicResolver:
         matchers = ua_parser.load_builtins()
     else:
@@ -188,15 +184,13 @@ class UserAgent:
         return f"<UserAgent {self.ua_string!r}>"
 
     def _is_android_tablet(self) -> bool:
-        # Newer Android tablets leave "Mobile" out of the user agent. Older
-        # ones like the Galaxy Tab still send it.
+        # Newer Android tablets leave "Mobile" out of the UA, older ones still send it.
         return (
             "Mobile Safari" not in self.ua_string
             and self.browser.family != "Firefox Mobile"
         )
 
     def _is_blackberry_touch_capable_device(self) -> bool:
-        # The BlackBerry Bold Touch series starts at 99xx, the Storm at 95xx.
         return (
             "Blackberry 99" in self.device.family
             or "Blackberry 95" in self.device.family
@@ -231,8 +225,7 @@ class UserAgent:
         return (
             self.device.family in MOBILE_DEVICE_FAMILIES
             or self.browser.family in MOBILE_BROWSER_FAMILIES
-            # Android and Firefox OS devices are phones unless they're
-            # tablets. Not fool proof, but close enough.
+            # Android and Firefox OS devices are phones unless they're tablets.
             or (self.os.family in ("Android", "Firefox OS") and not self.is_tablet)
             or (
                 self.os.family == "BlackBerry OS"
@@ -241,7 +234,6 @@ class UserAgent:
             or self.os.family in MOBILE_OS_FAMILIES
             or "J2ME" in ua_string
             or "MIDP" in ua_string
-            # Mainly for Google's mobile crawler.
             or "iPhone;" in ua_string
             or "Googlebot-Mobile" in ua_string
             or (self.device.family == "Spider" and "Mobile" in self.browser.family)
