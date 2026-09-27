@@ -29,8 +29,8 @@ returns `False`.
 
 ## `bots` filters
 
-The `bots` library has the `is_crawler` and `is_ai_bot` filters, plus every filter from `user_agents`,
-so one `{% load bots %}` is enough:
+The `bots` library has the `is_crawler` and `is_ai_bot` filters, plus every filter
+from `user_agents`, so one `{% load bots %}` is enough:
 
 ```django
 {% load bots %}

@@ -1,6 +1,49 @@
 # Contributing
 
-This page is not written yet. It fills in as the feature lands.
+Bug reports and pull requests are welcome on
+[GitHub](https://github.com/M4p4/django-bots). For a larger change, open an issue
+first so we can agree on the approach.
+
+## Setup
+
+The project uses [uv](https://docs.astral.sh/uv/). Clone the repository and run the
+tests:
+
+```console
+$ git clone https://github.com/M4p4/django-bots.git
+$ cd django-bots
+$ uv run pytest
+```
+
+`uv run` creates a virtual environment with the test dependencies and Django 5.2 on
+first use.
+
+## Checks
+
+Every pull request has to pass the same checks as CI.
+
+[pre-commit](https://pre-commit.com/) runs the linters, formatters and mypy. Install
+the hooks once, or run them on every file:
+
+```console
+$ uvx --with pre-commit-uv pre-commit install
+$ uvx --with pre-commit-uv pre-commit run --all-files
+```
+
+[tox](https://tox.wiki/) runs the tests on every supported Python and Django version,
+and builds the docs:
+
+```console
+$ uvx --with tox-uv tox                   # everything
+$ uvx --with tox-uv tox -e py314-django61 # one environment
+$ uvx --with tox-uv tox -e docs           # the docs
+```
+
+Coverage must stay at 100%, branches included. Tox environments need the matching
+Python versions; `uv python install 3.10 3.11 3.12 3.13 3.14` gets them all.
+
+When a change affects users, add a line under `## Unreleased` in `CHANGELOG.md`, and
+update the docs page for the feature.
 
 ## AI bot data updates
 

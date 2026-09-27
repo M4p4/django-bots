@@ -7,7 +7,8 @@ All settings are optional.
 Default: `2048`
 
 How many parsed user agents, crawler checks and AI bot checks each worker process
-keeps in its least-recently-used caches. Set it to `0` to turn the cache off. See [Caching](user-agents.md#caching).
+keeps in its least-recently-used caches. Set it to `0` to turn the cache off. See
+[Caching](user-agents.md#caching).
 
 ## `BOTS_CRAWLER_EXTRA`
 
