@@ -42,7 +42,6 @@ def ai_bot_names() -> list[str]:
 
 
 # Contact links name the operator, not the bot: "openai.com" would match "OpenAI".
-# The lookbehind starts an email only at the start of a word, which keeps it linear.
 URL_OR_EMAIL = re.compile(r"(?:https?://|www\.)[^\s;)]+|(?<![\w.+-])[\w.+-]+@[\w.-]+")
 
 

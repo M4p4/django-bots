@@ -96,7 +96,6 @@ class AIBotBlockMiddleware:
         if self.block_view is None:
             return self.forbidden()
         response: HttpResponseBase = self.block_view(request)
-        # Django only renders template responses returned by the resolved view.
         if isinstance(response, SimpleTemplateResponse):
             response = response.render()
         return response
