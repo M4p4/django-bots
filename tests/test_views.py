@@ -31,6 +31,16 @@ def test_robots_txt_content(rf):
     assert response.content.decode() == robots_rules() + "\n"
 
 
+def test_robots_txt_without_template_engine(rf, settings):
+    settings.TEMPLATES = []
+
+    response = robots_txt(rf.get("/robots.txt"))
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "text/plain; charset=utf-8"
+    assert response.content.decode() == robots_rules() + "\n"
+
+
 @pytest.mark.parametrize("method", ["post", "put", "delete"])
 def test_robots_txt_rejects_unsafe_methods(rf, method):
     request = getattr(rf, method)("/robots.txt")

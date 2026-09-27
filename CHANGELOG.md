@@ -6,6 +6,7 @@
 - The system check `django_bots.E002` reports a `BOTS_AI_BLOCK_VIEW` that points at a class instead of a view, which failed on the first blocked request.
 - Fixed `BOTS_AI_BLOCK_EXEMPT_PATHS` for sites mounted under a subpath. Paths are compared with `request.path_info` instead of `request.path`, which includes the prefix, so AI bots were blocked from `/robots.txt` there.
 - The default block response sends `Cache-Control: private, no-store`, so shared caches don't serve it to other visitors.
+- Fixed the `robots_txt` view returning a 500 in projects without Django's template engine, such as API-only or Jinja2-only projects. It serves the rules as plain text there.
 
 ## 1.0.1 (2026-09-27)
 

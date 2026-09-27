@@ -130,6 +130,10 @@ template of the same name it overrides.
 If you already serve robots.txt from your own template, print the rules with the
 [`ai_robots_rules` tag](templates.md#ai_robots_rules) instead.
 
+The view doesn't need Django's template engine. In a project without it, such as an
+API-only project or one that only uses Jinja2, it serves the rules without the
+template, so there's no `rules` block to extend.
+
 ## Blocking AI bots
 
 robots.txt only asks. To refuse AI bots outright, add `AIBotBlockMiddleware`:
