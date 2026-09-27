@@ -6,7 +6,7 @@ All settings are optional.
 
 Default: `2048`
 
-How many parsed user agents, and how many crawler check results, each worker process
+How many parsed user agents, crawler checks and AI bot checks each worker process
 keeps in its least-recently-used caches. Set it to `0` to turn the cache off. See [Caching](user-agents.md#caching).
 
 ## `BOTS_CRAWLER_EXTRA`
@@ -23,6 +23,19 @@ Default: `[]`
 
 Patterns to remove from the crawler-user-agents list. Each entry must match a pattern
 exactly as it's written in the list.
+
+## `BOTS_AI_ALLOW`
+
+Default: `[]`
+
+AI bot names to remove from the list, compared case-insensitively. See
+[Allowing and adding bots](ai-bots.md#allowing-and-adding-bots).
+
+## `BOTS_AI_EXTRA`
+
+Default: `[]`
+
+Extra AI bot names, matched the same way as the bundled ones.
 
 ## Settings from django-user-agents
 

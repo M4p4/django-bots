@@ -19,7 +19,7 @@ django-user-agents, so existing templates keep working:
 | `is_tablet` | `request.user_agent.is_tablet` |
 | `is_touch_capable` | `request.user_agent.is_touch_capable` |
 | `is_pc` | `request.user_agent.is_pc` |
-| `is_bot` | `request.user_agent.is_bot` |
+| `is_bot` | `request.user_agent.is_bot`, which also covers crawlers and AI bots |
 
 The template context needs `request`, which the
 `django.template.context_processors.request` context processor adds. The filters use
@@ -29,7 +29,7 @@ returns `False`.
 
 ## `bots` filters
 
-The `bots` library has the `is_crawler` filter, plus every filter from `user_agents`,
+The `bots` library has the `is_crawler` and `is_ai_bot` filters, plus every filter from `user_agents`,
 so one `{% load bots %}` is enough:
 
 ```django
@@ -42,6 +42,7 @@ so one `{% load bots %}` is enough:
 | Filter | Returns |
 |---|---|
 | `is_crawler` | `request.user_agent.is_crawler` |
+| `is_ai_bot` | `request.user_agent.is_ai_bot` |
 
 Like the `user_agents` filters, they need `request` in the context and return `False`
 without it.

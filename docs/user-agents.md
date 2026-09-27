@@ -65,8 +65,10 @@ django-user-agents is built on.
 | `is_pc` | `False` | A desktop or laptop running Windows, macOS, Linux or ChromeOS |
 | `is_touch_capable` | `True` | A device with a touch screen |
 | `is_email_client` | `False` | An email client such as Outlook or Thunderbird |
-| `is_bot` | `False` | ua-parser classifies the device as a spider |
+| `is_bot` | `False` | A spider, a crawler or an AI bot (see [`is_bot`](ai-bots.md#is_bot)) |
 | `is_crawler` | `False` | Matches a [crawler pattern](crawlers.md) |
+| `is_ai_bot` | `False` | Matches an [AI bot](ai-bots.md) |
+| `ai_bot` | `None` | Name of the matched AI bot, such as `"GPTBot"` |
 
 `browser`, `os` and `device` are named tuples. Version parts made of digits are
 ints, and other parts stay strings, so Windows RT gives `version=("RT",)`.
