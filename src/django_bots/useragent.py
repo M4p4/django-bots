@@ -19,6 +19,7 @@ import ua_parser
 from ua_parser import Cache, CachingResolver, Resolver
 from ua_parser.caching import Lru
 
+from django_bots.ai import match_ai_bot
 from django_bots.conf import bots_settings
 from django_bots.crawlers import is_crawler
 
@@ -280,13 +281,26 @@ class UserAgent:
 
     @property
     def is_bot(self) -> bool:
-        """Whether ua-parser classifies the device as a spider."""
-        return self.device.family == "Spider"
+        """Whether the user agent is a spider, a crawler or an AI bot.
+
+        django-user-agents only checks for a spider device.
+        """
+        return self.device.family == "Spider" or self.is_crawler or self.is_ai_bot
 
     @property
     def is_crawler(self) -> bool:
         """Whether the user agent matches a crawler-user-agents pattern."""
         return is_crawler(self.ua_string)
+
+    @property
+    def is_ai_bot(self) -> bool:
+        """Whether the user agent matches an ai.robots.txt entry."""
+        return self.ai_bot is not None
+
+    @property
+    def ai_bot(self) -> str | None:
+        """The name of the matched ai.robots.txt entry, or ``None``."""
+        return match_ai_bot(self.ua_string)
 
     @property
     def is_email_client(self) -> bool:

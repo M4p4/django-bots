@@ -33,8 +33,7 @@ True
 ```
 
 `is_crawler` covers search engines, SEO tools, uptime monitors, feed readers and HTTP
-libraries such as python-requests and curl. `is_bot` doesn't include it yet: it still
-means only that ua-parser classifies the device as a spider.
+libraries such as python-requests and curl. `is_bot` is true for every crawler, too.
 
 ## Where the patterns come from
 

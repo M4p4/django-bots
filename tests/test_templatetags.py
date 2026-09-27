@@ -16,6 +16,10 @@ WINDOWS_CHROME = (
     "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 )
 GOOGLEBOT = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+GPTBOT = (
+    "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; "
+    "+https://openai.com/gptbot)"
+)
 
 TEMPLATE = (
     "{% load user_agents %}"
@@ -57,7 +61,7 @@ def test_filters_without_request():
 
 BOTS_TEMPLATE = (
     "{% load bots %}"
-    "{{ request|is_crawler }} {{ request|is_mobile }} {{ request|is_tablet }} "
+    "{{ request|is_ai_bot }} {{ request|is_crawler }} {{ request|is_mobile }} {{ request|is_tablet }} "
     "{{ request|is_touch_capable }} {{ request|is_pc }} {{ request|is_bot }}"
 )
 
@@ -65,9 +69,10 @@ BOTS_TEMPLATE = (
 @pytest.mark.parametrize(
     ("ua_string", "expected"),
     [
-        (IPHONE, "False True False True False False"),
-        (WINDOWS_CHROME, "False False False False True False"),
-        (GOOGLEBOT, "True False False False False True"),
+        (IPHONE, "False False True False True False False"),
+        (WINDOWS_CHROME, "False False False False False True False"),
+        (GOOGLEBOT, "False True False False False False True"),
+        (GPTBOT, "True True False False False False True"),
     ],
 )
 def test_bots_filters(rf, ua_string, expected):
@@ -81,4 +86,4 @@ def test_bots_filters(rf, ua_string, expected):
 def test_bots_filters_without_request():
     result = Template(BOTS_TEMPLATE).render(Context())
 
-    assert result == "False False False False False False"
+    assert result == "False False False False False False False"

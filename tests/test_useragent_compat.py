@@ -19,7 +19,6 @@ ATTRIBUTES = (
     "is_tablet",
     "is_pc",
     "is_touch_capable",
-    "is_bot",
     "is_email_client",
 )
 
@@ -55,3 +54,11 @@ def test_matches_user_agents(ua_string):
     result = _attributes(parse(ua_string), skip)
 
     assert result == _attributes(user_agents.parse(ua_string), skip)
+
+
+@pytest.mark.parametrize("ua_string", UA_STRINGS)
+def test_is_bot_covers_user_agents(ua_string):
+    # is_bot also includes crawlers and AI bots, so it only has to agree when the old one is true.
+    result = parse(ua_string).is_bot
+
+    assert result or not user_agents.parse(ua_string).is_bot

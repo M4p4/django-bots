@@ -26,6 +26,25 @@
 .. autofunction:: django_bots.crawlers.crawler_patterns
 ```
 
+## `django_bots.ai`
+
+```{eval-rst}
+.. autofunction:: django_bots.ai.is_ai_bot
+
+.. autofunction:: django_bots.ai.match_ai_bot
+
+.. autofunction:: django_bots.ai.ai_bot_names
+
+.. autofunction:: django_bots.ai.ai_bots
+```
+
+## `django_bots`
+
+```{eval-rst}
+.. autodata:: django_bots.DATA_VERSIONS
+   :no-value:
+```
+
 ## `django_bots.utils`
 
 ```{eval-rst}

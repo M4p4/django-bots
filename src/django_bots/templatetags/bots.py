@@ -1,4 +1,4 @@
-"""Bot detection filters, plus every filter from the ``user_agents`` library."""
+"""Crawler and AI bot filters, plus every filter from the ``user_agents`` library."""
 
 from __future__ import annotations
 
@@ -15,3 +15,8 @@ register.filters.update(user_agents.register.filters)
 @register.filter
 def is_crawler(request: HttpRequest) -> bool:
     return get_and_set_user_agent(request).is_crawler
+
+
+@register.filter
+def is_ai_bot(request: HttpRequest) -> bool:
+    return get_and_set_user_agent(request).is_ai_bot
