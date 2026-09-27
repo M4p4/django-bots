@@ -28,6 +28,7 @@ __all__ = [
     "categorize",
     "is_ai_bot",
     "match_ai_bot",
+    "match_ai_bots",
     "robots_rules",
 ]
 
@@ -127,7 +128,7 @@ URL_OR_EMAIL = re.compile(
 @lru_cache(maxsize=1)
 def _get_matcher(
     cache_size: int, allow: tuple[str, ...], extra: tuple[str, ...]
-) -> Callable[[str], str | None]:
+) -> Callable[[str], tuple[str, ...]]:
     """Build the matcher, rebuilt whenever one of the settings changes."""
     # Upstream lists some names in two spellings, so the first one is reported.
     names = ai_bot_names()
@@ -143,23 +144,29 @@ def _get_matcher(
     # An empty alternation matches everything, so fall back to a never-matching regex.
     regex = re.compile(rf"\b(?:{alternation})\b" if canonical else "(?!)", re.I)
 
-    def match(ua_string: str) -> str | None:
-        found = regex.search(URL_OR_EMAIL.sub(" ", ua_string))
-        return canonical[found.group().lower()] if found else None
+    def match(ua_string: str) -> tuple[str, ...]:
+        found = regex.finditer(URL_OR_EMAIL.sub(" ", ua_string))
+        return tuple(dict.fromkeys(canonical[m.group().lower()] for m in found))
 
     if cache_size > 0:
         return lru_cache(maxsize=cache_size)(match)
     return match
 
 
-def match_ai_bot(ua_string: str) -> str | None:
-    """Return the name of the AI bot the user-agent string matches, or ``None``."""
+def match_ai_bots(ua_string: str) -> tuple[str, ...]:
+    """Return every AI bot name the user-agent string matches, in the order they appear."""
     matcher = _get_matcher(
         bots_settings.UA_CACHE_SIZE,
         tuple(bots_settings.AI_ALLOW),
         tuple(bots_settings.AI_EXTRA),
     )
     return matcher(ua_string[:UA_MAX_LENGTH])
+
+
+def match_ai_bot(ua_string: str) -> str | None:
+    """Return the name of the first AI bot the user-agent string matches, or ``None``."""
+    names = match_ai_bots(ua_string)
+    return names[0] if names else None
 
 
 def is_ai_bot(ua_string: str) -> bool:

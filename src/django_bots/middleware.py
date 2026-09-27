@@ -17,7 +17,7 @@ from django.utils.cache import patch_cache_control
 from django.utils.functional import SimpleLazyObject
 from django.utils.module_loading import import_string
 
-from django_bots.ai import ai_bot_category, match_ai_bot
+from django_bots.ai import ai_bot_category, match_ai_bots
 from django_bots.conf import bots_settings
 from django_bots.utils import get_user_agent
 
@@ -59,8 +59,9 @@ class UserAgentMiddleware:
 class AIBotBlockMiddleware:
     """Answer requests from AI bots with ``BOTS_AI_BLOCK_STATUS`` or ``BOTS_AI_BLOCK_VIEW``.
 
-    Only bots in ``BOTS_AI_BLOCK_CATEGORIES`` are blocked. Only the raw user-agent
-    string is checked, so the user agent is never fully parsed.
+    A request is blocked when any AI bot name it matches is in
+    ``BOTS_AI_BLOCK_CATEGORIES``. Only the raw user-agent string is checked, so the
+    user agent is never fully parsed.
     Paths in ``BOTS_AI_BLOCK_EXEMPT_PATHS`` are never blocked. They're compared with
     ``request.path_info``, without the script prefix.
     """
@@ -115,11 +116,9 @@ class AIBotBlockMiddleware:
     def blocks(request: HttpRequest) -> bool:
         if request.path_info in bots_settings.AI_BLOCK_EXEMPT_PATHS:
             return False
-        name = match_ai_bot(request.headers.get("user-agent", ""))
-        return (
-            name is not None
-            and ai_bot_category(name) in bots_settings.AI_BLOCK_CATEGORIES
-        )
+        names = match_ai_bots(request.headers.get("user-agent", ""))
+        blocked = bots_settings.AI_BLOCK_CATEGORIES
+        return any(ai_bot_category(name) in blocked for name in names)
 
     @staticmethod
     def forbidden() -> HttpResponse:

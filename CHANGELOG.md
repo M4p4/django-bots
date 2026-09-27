@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fixed `AIBotBlockMiddleware` letting a bot through when an agent's name came first in its user agent, for example `Operator/1.0 ClaudeBot/1.0` or a user agent starting with `Code`. It now blocks the request when any matched name is in `BOTS_AI_BLOCK_CATEGORIES`.
+- New `django_bots.ai.match_ai_bots()` returns every AI bot name a user agent matches. `ai_bot` and `match_ai_bot()` still report the first one.
+
 ## 1.2.0 (2026-09-27)
 
 - AI bots have a category: `training`, `search`, `assistant` or `agent`. It's available as `request.user_agent.ai_bot_category` and `django_bots.ai.ai_bot_category()`.
