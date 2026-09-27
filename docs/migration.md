@@ -67,8 +67,15 @@ is_bot = device.family == "Spider" or is_crawler or is_ai_bot
 
 If `is_bot` hides content, skips analytics or changes caching, expect more requests to
 take that path. Clients such as python-requests, curl and uptime monitors now count as
-bots too. That's usually what you want. To keep the old behavior in one place, check
-the device family:
+bots too. That's usually what you want.
+
+Some people count as bots, too. The VS Code, Cursor and Trae desktop apps put their
+names in the user agent of their built-in browsers, and these names are on the
+[AI bot list](limits.md#broad-entries). The Slack desktop app matches a crawler
+pattern. With `AIBotBlockMiddleware`, people in VS Code, Cursor and Trae are also
+blocked.
+
+To keep the old behavior in one place, check the device family:
 
 ```python
 if request.user_agent.device.family == "Spider":

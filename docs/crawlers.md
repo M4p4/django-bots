@@ -58,6 +58,14 @@ parsing, sized by `BOTS_UA_CACHE_SIZE` (see [Caching](user-agents.md#caching)).
 BOTS_CRAWLER_EXTRA = [r"^acme-link-checker/"]
 ```
 
+Some health checks aren't in the list, for example Kubernetes probes and AWS load
+balancer checks. They're a common reason to skip analytics, so add them if they reach
+your site:
+
+```python
+BOTS_CRAWLER_EXTRA = [r"^kube-probe/", r"^ELB-HealthChecker/"]
+```
+
 `BOTS_CRAWLER_IGNORE` removes patterns from the list, for example to treat your uptime
 monitor as a normal client:
 

@@ -138,6 +138,15 @@ If you already serve robots.txt from your own template, print the rules with the
 
 robots.txt only asks. To refuse AI bots outright, add `AIBotBlockMiddleware`:
 
+```{warning}
+The list blocks more than AI crawlers. With the default settings, the middleware also
+refuses `facebookexternalhit` (link previews on Facebook, Messenger and WhatsApp),
+`Applebot` (Siri and Spotlight search), `PetalBot` (Huawei's search engine),
+`GoogleOther`, any user agent with the word `spider`, and people in the VS Code, Cursor
+and Trae desktop apps. See [Broad entries](limits.md#broad-entries) and allow the ones
+you need with [`BOTS_AI_ALLOW`](#allowing-and-adding-bots).
+```
+
 ```python
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

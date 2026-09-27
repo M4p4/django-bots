@@ -27,6 +27,12 @@ are well under that, and the limit keeps the work per request small whatever a c
 sends. A bot name that appears only after the first 512 characters isn't detected.
 `request.user_agent.ua_string` still holds the full header.
 
+## Devices that hide their type
+
+Safari on iPadOS 13 and later sends the same user agent as Safari on a Mac, so an iPad
+is `is_pc` and not `is_tablet`. The user agent has nothing to tell them apart. Smart TVs
+and game consoles are none of `is_mobile`, `is_tablet`, `is_pc` or `is_bot`.
+
 ## robots.txt is voluntary
 
 robots.txt rules are a request, not a barrier. Well-behaved crawlers follow them, and
@@ -49,9 +55,12 @@ that are ordinary words:
 - `facebookexternalhit` builds link previews on Facebook, Messenger and WhatsApp.
 - `Applebot` powers search in Siri and Spotlight, not only Apple's AI features. Apple's
   AI training opt-out is the separate `Applebot-Extended` token.
-- `Code` also appears in the user agent of the Visual Studio Code desktop app, for
-  example in its built-in browser.
-- `Spider` matches any user agent with `spider` as a separate word.
+- `PetalBot` is the crawler of Huawei's Petal Search, and `GoogleOther` does Google's
+  research and one-off crawls.
+- `Code`, `Cursor` and `Trae` also appear in the user agents of the VS Code, Cursor and
+  Trae desktop apps, so people opening your site in their built-in browsers match.
+- `Spider` matches any user agent with `spider` as a separate word, such as the Sogou
+  search crawler and Screaming Frog SEO Spider.
 
 If one of them matters for your site, add it to `BOTS_AI_ALLOW`.
 
