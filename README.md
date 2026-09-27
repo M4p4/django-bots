@@ -5,7 +5,9 @@
 [![CI](https://github.com/M4p4/django-bots/actions/workflows/main.yml/badge.svg)](https://github.com/M4p4/django-bots/actions/workflows/main.yml)
 [![Documentation](https://readthedocs.org/projects/djangobots/badge/?version=stable)](https://djangobots.readthedocs.io/)
 
-User-agent parsing, crawler detection and AI bot blocking for Django.
+More and more of the traffic on a website comes from crawlers, scrapers and AI bots
+instead of people. I wrote django-bots to tell them apart in Django, and to keep out
+the AI bots I don't want.
 
 django-bots tells you who is on the other end of a request: which browser, operating
 system and device, whether it's a crawler, and whether it's an AI bot. It can serve a
