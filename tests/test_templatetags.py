@@ -92,6 +92,24 @@ def test_bots_filters_without_request():
     assert result == "False False False False False False False"
 
 
+class LogEntry:
+    user_agent = "Mozilla/5.0 (compatible; GPTBot/1.2)"
+
+
+@pytest.mark.parametrize("value", [{"path": "/"}, "request", LogEntry()])
+@pytest.mark.parametrize(
+    ("template", "expected"),
+    [
+        (TEMPLATE, "False False False False False"),
+        (BOTS_TEMPLATE, "False False False False False False False"),
+    ],
+)
+def test_filters_with_a_non_request(value, template, expected):
+    result = Template(template).render(Context({"request": value}))
+
+    assert result == expected
+
+
 def test_ai_robots_rules_tag():
     result = Template("{% load bots %}{% ai_robots_rules %}").render(Context())
 
