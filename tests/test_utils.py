@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-from django.test import RequestFactory
 
 from django_bots.useragent import UserAgent, parse
 from django_bots.utils import get_and_set_user_agent, get_user_agent
@@ -12,7 +11,7 @@ IPHONE = (
 )
 
 
-def test_get_user_agent_parses_header(rf: RequestFactory):
+def test_get_user_agent_parses_header(rf):
     request = rf.get("/", HTTP_USER_AGENT=IPHONE)
 
     result = get_user_agent(request)
@@ -21,7 +20,7 @@ def test_get_user_agent_parses_header(rf: RequestFactory):
     assert result.ua_string == IPHONE
 
 
-def test_get_user_agent_without_header(rf: RequestFactory):
+def test_get_user_agent_without_header(rf):
     request = rf.get("/")
 
     result = get_user_agent(request)
@@ -36,7 +35,7 @@ def test_get_user_agent_without_meta():
     assert result == ""
 
 
-def test_get_and_set_user_agent_sets_attribute(rf: RequestFactory):
+def test_get_and_set_user_agent_sets_attribute(rf):
     request = rf.get("/", HTTP_USER_AGENT=IPHONE)
 
     result = get_and_set_user_agent(request)
@@ -45,10 +44,10 @@ def test_get_and_set_user_agent_sets_attribute(rf: RequestFactory):
     assert result.device.family == "iPhone"
 
 
-def test_get_and_set_user_agent_reuses_attribute(rf: RequestFactory):
+def test_get_and_set_user_agent_reuses_attribute(rf):
     request = rf.get("/", HTTP_USER_AGENT=IPHONE)
     existing = parse("curl/8.7.1")
-    request.user_agent = existing  # type: ignore[attr-defined]
+    request.user_agent = existing
 
     result = get_and_set_user_agent(request)
 

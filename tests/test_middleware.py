@@ -4,7 +4,6 @@ import asyncio
 
 from asgiref.sync import iscoroutinefunction
 from django.http import HttpRequest, HttpResponse
-from django.test import AsyncRequestFactory, RequestFactory
 from django.utils.functional import SimpleLazyObject
 
 from django_bots import utils
@@ -25,7 +24,7 @@ async def async_view(request: HttpRequest) -> HttpResponse:
     return HttpResponse(str(request.user_agent))  # type: ignore[attr-defined]
 
 
-def test_sync_sets_user_agent(rf: RequestFactory):
+def test_sync_sets_user_agent(rf):
     middleware = UserAgentMiddleware(sync_view)
     request = rf.get("/", HTTP_USER_AGENT=IPHONE)
 
@@ -36,17 +35,17 @@ def test_sync_sets_user_agent(rf: RequestFactory):
     assert response.content == b"iPhone / iOS 5.1 / Mobile Safari 5.1"
 
 
-def test_async_sets_user_agent(async_rf: AsyncRequestFactory):
+def test_async_sets_user_agent(async_rf):
     middleware = UserAgentMiddleware(async_view)
     request = async_rf.get("/", headers={"user-agent": IPHONE})
 
-    response = asyncio.run(middleware(request))  # type: ignore[arg-type]
+    response: HttpResponse = asyncio.run(middleware(request))  # type: ignore[arg-type]
 
     assert iscoroutinefunction(middleware)
     assert response.content == b"iPhone / iOS 5.1 / Mobile Safari 5.1"
 
 
-def test_parses_lazily(monkeypatch, rf: RequestFactory):
+def test_parses_lazily(monkeypatch, rf):
     calls = []
 
     def spy(ua_string):
@@ -57,8 +56,8 @@ def test_parses_lazily(monkeypatch, rf: RequestFactory):
     request = rf.get("/", HTTP_USER_AGENT=IPHONE)
     UserAgentMiddleware(lambda request: HttpResponse())(request)
 
-    assert isinstance(request.user_agent, SimpleLazyObject)  # type: ignore[attr-defined]
+    assert isinstance(request.user_agent, SimpleLazyObject)
     assert calls == []
-    assert request.user_agent.is_mobile  # type: ignore[attr-defined]
-    assert request.user_agent.is_tablet is False  # type: ignore[attr-defined]
+    assert request.user_agent.is_mobile
+    assert request.user_agent.is_tablet is False
     assert calls == [IPHONE]

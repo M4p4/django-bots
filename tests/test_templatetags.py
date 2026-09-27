@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import pytest
 from django.template import Context, Template
-from django.test import RequestFactory
 
 IPHONE = (
     "Mozilla/5.0 (iPhone; CPU iPhone OS 5_1 like Mac OS X) AppleWebKit/534.46 "
@@ -34,7 +33,7 @@ TEMPLATE = (
         (GOOGLEBOT, "False False False False True"),
     ],
 )
-def test_filters(rf: RequestFactory, ua_string, expected):
+def test_filters(rf, ua_string, expected):
     request = rf.get("/", HTTP_USER_AGENT=ua_string)
 
     result = Template(TEMPLATE).render(Context({"request": request}))
@@ -42,12 +41,12 @@ def test_filters(rf: RequestFactory, ua_string, expected):
     assert result == expected
 
 
-def test_filters_set_user_agent_once(rf: RequestFactory):
+def test_filters_set_user_agent_once(rf):
     request = rf.get("/", HTTP_USER_AGENT=IPHONE)
 
     Template(TEMPLATE).render(Context({"request": request}))
 
-    assert request.user_agent.ua_string == IPHONE  # type: ignore[attr-defined]
+    assert request.user_agent.ua_string == IPHONE
 
 
 def test_filters_without_request():
