@@ -37,9 +37,9 @@ robots.txt, in the `respect` field of `django_bots.ai.ai_bots()`.
 
 `AIBotBlockMiddleware` only sees requests that reach Django. A CDN or reverse proxy
 that caches pages serves them to AI bots from the cache, and it may also cache the
-block response and serve it to other visitors. Block AI bots at the cache as well, or
-keep the block response out of it, for example with a view in `BOTS_AI_BLOCK_VIEW`
-that sets `Cache-Control: private`.
+block response and serve it to other visitors. Block AI bots at the cache as well. The
+default block response sends `Cache-Control: private, no-store` to keep itself out of
+shared caches; a view in `BOTS_AI_BLOCK_VIEW` should do the same.
 
 ## Broad entries
 

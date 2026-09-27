@@ -13,6 +13,7 @@ from asgiref.sync import (
 )
 from django.http import HttpRequest, HttpResponse, HttpResponseBase
 from django.template.response import SimpleTemplateResponse
+from django.utils.cache import patch_cache_control
 from django.utils.functional import SimpleLazyObject
 from django.utils.module_loading import import_string
 
@@ -59,7 +60,8 @@ class AIBotBlockMiddleware:
     """Answer requests from AI bots with ``BOTS_AI_BLOCK_STATUS`` or ``BOTS_AI_BLOCK_VIEW``.
 
     Only the raw user-agent string is checked, so the user agent is never fully parsed.
-    Paths in ``BOTS_AI_BLOCK_EXEMPT_PATHS`` are never blocked.
+    Paths in ``BOTS_AI_BLOCK_EXEMPT_PATHS`` are never blocked. They're compared with
+    ``request.path_info``, without the script prefix.
     """
 
     sync_capable = True
@@ -111,14 +113,18 @@ class AIBotBlockMiddleware:
 
     @staticmethod
     def blocks(request: HttpRequest) -> bool:
-        if request.path in bots_settings.AI_BLOCK_EXEMPT_PATHS:
+        # path_info leaves out SCRIPT_NAME, so exempt paths work under a URL prefix.
+        if request.path_info in bots_settings.AI_BLOCK_EXEMPT_PATHS:
             return False
         return is_ai_bot(request.headers.get("user-agent", ""))
 
     @staticmethod
     def forbidden() -> HttpResponse:
-        return HttpResponse(
+        response = HttpResponse(
             "Forbidden",
             status=bots_settings.AI_BLOCK_STATUS,
             content_type="text/plain; charset=utf-8",
         )
+        # Shared caches must not serve the block response to other visitors.
+        patch_cache_control(response, private=True, no_store=True)
+        return response

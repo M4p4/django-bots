@@ -4,6 +4,8 @@
 
 - Fixed `AIBotBlockMiddleware` returning an unrendered `TemplateResponse` from `BOTS_AI_BLOCK_VIEW`, which raised `ContentNotRenderedError`. Block views built on `TemplateView` and other generic views now work.
 - The system check `django_bots.E002` reports a `BOTS_AI_BLOCK_VIEW` that points at a class instead of a view, which failed on the first blocked request.
+- Fixed `BOTS_AI_BLOCK_EXEMPT_PATHS` for sites mounted under a subpath. Paths are compared with `request.path_info` instead of `request.path`, which includes the prefix, so AI bots were blocked from `/robots.txt` there.
+- The default block response sends `Cache-Control: private, no-store`, so shared caches don't serve it to other visitors.
 
 ## 1.0.1 (2026-09-27)
 

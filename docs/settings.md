@@ -59,7 +59,8 @@ isn't callable or is a class. See [Blocking AI bots](ai-bots.md#blocking-ai-bots
 
 Default: `["/robots.txt"]`
 
-Paths that `AIBotBlockMiddleware` never blocks, compared exactly with `request.path`.
+Paths that `AIBotBlockMiddleware` never blocks, compared exactly with
+`request.path_info`, which leaves out the prefix of a site mounted under a subpath.
 If you set it, keep `/robots.txt` in the list so bots can read your rules.
 
 ## Settings from django-user-agents

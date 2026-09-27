@@ -175,7 +175,8 @@ class.
 
 Requests to `/robots.txt` are never blocked, so bots can still read your rules.
 `BOTS_AI_BLOCK_EXEMPT_PATHS` sets the full list of paths to let through. Each path is
-compared exactly with `request.path`:
+compared exactly with `request.path_info`, the path without the prefix of a site
+mounted under a subpath:
 
 ```python
 BOTS_AI_BLOCK_EXEMPT_PATHS = ["/robots.txt", "/llms.txt"]
