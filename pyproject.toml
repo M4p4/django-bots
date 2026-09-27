@@ -46,6 +46,12 @@ test = [
   "pytest-django",
   "pytest-randomly",
 ]
+# Sphinx 9 needs Python 3.12 or newer.
+docs = [
+  "furo; python_version>='3.12'",
+  "myst-parser; python_version>='3.12'",
+  "sphinx; python_version>='3.12'",
+]
 django52 = [ "django>=5.2,<5.3" ]
 # Django 6.0 and later need Python 3.12 or newer.
 django60 = [ "django>=6,<6.1; python_version>='3.12'" ]
