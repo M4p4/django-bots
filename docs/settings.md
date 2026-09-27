@@ -52,8 +52,8 @@ Default: `None`
 
 Dotted path to a view that renders the response for blocked requests instead, for
 example `"myproject.views.ai_bot_blocked"`. It's imported once, when the middleware
-loads. The system check `django_bots.E002` reports a path that can't be imported or
-isn't callable.
+loads. The system check `django_bots.E002` reports a path that can't be imported,
+isn't callable or is a class. See [Blocking AI bots](ai-bots.md#blocking-ai-bots).
 
 ## `BOTS_AI_BLOCK_EXEMPT_PATHS`
 

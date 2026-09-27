@@ -12,6 +12,7 @@ from asgiref.sync import (
     sync_to_async,
 )
 from django.http import HttpRequest, HttpResponse, HttpResponseBase
+from django.template.response import SimpleTemplateResponse
 from django.utils.functional import SimpleLazyObject
 from django.utils.module_loading import import_string
 
@@ -93,6 +94,9 @@ class AIBotBlockMiddleware:
         if self.block_view is None:
             return self.forbidden()
         response: HttpResponseBase = self.block_view(request)
+        # Django only renders template responses returned by the resolved view.
+        if isinstance(response, SimpleTemplateResponse):
+            response = response.render()
         return response
 
     async def __acall__(self, request: HttpRequest) -> HttpResponseBase:
@@ -101,6 +105,8 @@ class AIBotBlockMiddleware:
         if self.block_view is None:
             return self.forbidden()
         response: HttpResponseBase = await self.block_view(request)
+        if isinstance(response, SimpleTemplateResponse):
+            response = await sync_to_async(response.render)()
         return response
 
     @staticmethod

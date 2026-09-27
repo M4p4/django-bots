@@ -5,8 +5,11 @@ import asyncio
 import pytest
 from asgiref.sync import iscoroutinefunction
 from django.http import HttpRequest, HttpResponse
+from django.template import engines
+from django.template.response import TemplateResponse
 from django.test import override_settings
 from django.utils.functional import SimpleLazyObject
+from django.views import View
 
 from django_bots import utils
 from django_bots.middleware import AIBotBlockMiddleware, UserAgentMiddleware
@@ -87,6 +90,15 @@ async def async_block_view(request: HttpRequest) -> HttpResponse:
     return HttpResponse("No AI bots", status=451)
 
 
+class BlockView(View):
+    def get(self, request: HttpRequest) -> TemplateResponse:
+        template = engines["django"].from_string("No AI bots")
+        return TemplateResponse(request, template, status=451)
+
+
+block_view_cbv = BlockView.as_view()
+
+
 @pytest.mark.parametrize(
     ("path", "user_agent", "status", "content"),
     [
@@ -156,7 +168,7 @@ def test_block_exempt_paths(rf):
     assert (exempt.status_code, robots.status_code) == (200, 403)
 
 
-@pytest.mark.parametrize("view", ["block_view", "async_block_view"])
+@pytest.mark.parametrize("view", ["block_view", "async_block_view", "block_view_cbv"])
 def test_block_view_sync(rf, view):
     with override_settings(BOTS_AI_BLOCK_VIEW=f"tests.test_middleware.{view}"):
         middleware = AIBotBlockMiddleware(ok_view)
@@ -167,7 +179,7 @@ def test_block_view_sync(rf, view):
     assert (response.status_code, response.content) == (451, b"No AI bots")
 
 
-@pytest.mark.parametrize("view", ["block_view", "async_block_view"])
+@pytest.mark.parametrize("view", ["block_view", "async_block_view", "block_view_cbv"])
 def test_block_view_async(async_rf, view):
     with override_settings(BOTS_AI_BLOCK_VIEW=f"tests.test_middleware.{view}"):
         middleware = AIBotBlockMiddleware(async_ok_view)

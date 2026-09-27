@@ -35,7 +35,8 @@ def test_django_user_agents_installed_errors(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "view", [None, "tests.test_middleware.block_view", "django.http.HttpResponse"]
+    "view",
+    [None, "tests.test_middleware.block_view", "tests.test_middleware.block_view_cbv"],
 )
 def test_ai_block_view_valid(view):
     with override_settings(BOTS_AI_BLOCK_VIEW=view):
@@ -50,6 +51,8 @@ def test_ai_block_view_valid(view):
         "tests.test_middleware.missing",
         "missing.module.view",
         "tests.test_middleware.GPTBOT",
+        "tests.test_middleware.BlockView",
+        "django.http.HttpResponse",
     ],
 )
 def test_ai_block_view_invalid(view):

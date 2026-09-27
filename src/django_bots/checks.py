@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from inspect import isclass
 from typing import Any
 
 from django.apps import AppConfig, apps
@@ -58,9 +59,12 @@ def check_ai_block_view(
     except ImportError as error:
         problem = str(error)
     else:
-        if callable(view):
+        if not callable(view):
+            problem = f"{path!r} is not callable."
+        elif isclass(view):
+            problem = f"{path!r} is a class. Point it at a name set to its as_view()."
+        else:
             return []
-        problem = f"{path!r} is not callable."
     return [
         Error(
             f"BOTS_AI_BLOCK_VIEW can't be used: {problem}",
