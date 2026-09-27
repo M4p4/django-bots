@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 from django.apps import apps
 from django.core.checks import Error, Warning, run_checks
 from django.test import override_settings
@@ -30,4 +31,30 @@ def test_django_user_agents_installed_errors(monkeypatch):
     result = run_checks()
 
     assert [message.id for message in result] == ["django_bots.E001"]
+    assert isinstance(result[0], Error)
+
+
+@pytest.mark.parametrize(
+    "view", [None, "tests.test_middleware.block_view", "django.http.HttpResponse"]
+)
+def test_ai_block_view_valid(view):
+    with override_settings(BOTS_AI_BLOCK_VIEW=view):
+        result = run_checks()
+
+    assert result == []
+
+
+@pytest.mark.parametrize(
+    "view",
+    [
+        "tests.test_middleware.missing",
+        "missing.module.view",
+        "tests.test_middleware.GPTBOT",
+    ],
+)
+def test_ai_block_view_invalid(view):
+    with override_settings(BOTS_AI_BLOCK_VIEW=view):
+        result = run_checks()
+
+    assert [message.id for message in result] == ["django_bots.E002"]
     assert isinstance(result[0], Error)
