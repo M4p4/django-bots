@@ -36,6 +36,8 @@
 .. autofunction:: django_bots.ai.ai_bot_names
 
 .. autofunction:: django_bots.ai.ai_bots
+
+.. autofunction:: django_bots.ai.robots_rules
 ```
 
 ## `django_bots`
@@ -43,6 +45,12 @@
 ```{eval-rst}
 .. autodata:: django_bots.DATA_VERSIONS
    :no-value:
+```
+
+## `django_bots.views`
+
+```{eval-rst}
+.. autofunction:: django_bots.views.robots_txt
 ```
 
 ## `django_bots.utils`

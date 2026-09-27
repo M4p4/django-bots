@@ -1,0 +1,2 @@
+{% load bots %}{% ai_robots_rules %}
+{% block rules %}{% endblock %}

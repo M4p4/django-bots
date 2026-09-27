@@ -16,6 +16,8 @@ repos:
   - id: check-symlinks
   - id: check-toml
   - id: end-of-file-fixer
+    # A final newline in a template would add a blank line to the rendered file.
+    exclude: ^src/django_bots/templates/
   - id: trailing-whitespace
 - repo: https://github.com/crate-ci/typos
   rev: 0758ccd3261dc7b0594e9b698113eb08d3ba25b5  # frozen: v1

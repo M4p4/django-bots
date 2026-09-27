@@ -5,7 +5,7 @@ from django.test import override_settings
 
 import django_bots
 from django_bots import ai
-from django_bots.ai import ai_bot_names, ai_bots, is_ai_bot, match_ai_bot
+from django_bots.ai import ai_bot_names, ai_bots, is_ai_bot, match_ai_bot, robots_rules
 from django_bots.useragent import parse
 
 GPTBOT = (
@@ -144,6 +144,40 @@ def test_zero_cache_size_disables_cache():
 
     assert result == "GPTBot"
     assert not hasattr(matcher, "cache_info")
+
+
+def test_robots_rules_format(monkeypatch):
+    monkeypatch.setattr(ai, "ai_bots", lambda: {"GPTBot": {}, "ChatGPT Agent": {}})
+
+    with override_settings(BOTS_AI_EXTRA=["NewBot"]):
+        result = robots_rules()
+
+    assert result == (
+        "User-agent: GPTBot\nUser-agent: ChatGPT Agent\nUser-agent: NewBot\nDisallow: /"
+    )
+
+
+def test_robots_rules_keep_duplicate_spellings():
+    result = robots_rules()
+
+    assert "User-agent: meta-externalagent\n" in result
+    assert "User-agent: Meta-ExternalAgent\n" in result
+    assert "User-agent: Google-Extended\n" in result
+
+
+def test_robots_rules_allow_setting():
+    with override_settings(BOTS_AI_ALLOW=["gptbot"]):
+        result = robots_rules()
+
+    assert "GPTBot" not in result
+    assert "User-agent: ClaudeBot\n" in result
+
+
+def test_robots_rules_without_names():
+    with override_settings(BOTS_AI_ALLOW=list(ai_bots())):
+        result = robots_rules()
+
+    assert result == ""
 
 
 @pytest.mark.parametrize(

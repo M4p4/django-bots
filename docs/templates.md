@@ -47,6 +47,25 @@ so one `{% load bots %}` is enough:
 Like the `user_agents` filters, they need `request` in the context and return `False`
 without it.
 
+## `ai_robots_rules`
+
+The `bots` library also has the `ai_robots_rules` tag. It prints the same rules as the
+[robots.txt view](ai-bots.md#serving-robotstxt), for projects that already have a
+robots.txt template:
+
+```django
+{% load bots %}User-agent: *
+Disallow: /admin/
+
+{% ai_robots_rules %}
+
+Sitemap: https://example.com/sitemap.xml
+```
+
+The output is one `User-agent:` line per AI bot, followed by `Disallow: /`, with no
+trailing newline. Names in `BOTS_AI_ALLOW` are left out. When no names are left, the
+tag prints nothing. The output isn't HTML-escaped, since robots.txt is plain text.
+
 ## Library name clash
 
 Don't keep `django_user_agents` in `INSTALLED_APPS` next to `django_bots`. Both apps
