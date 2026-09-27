@@ -32,7 +32,8 @@ exactly as it's written in the list.
 
 Default: `[]`
 
-AI bot names to remove from the list, compared case-insensitively. They're neither
+AI bot names to remove from the list, compared case-insensitively. A name also removes
+its spellings with a version, such as `Name/1.0`. They're neither
 detected nor listed in the robots.txt rules. See
 [Allowing and adding bots](ai-bots.md#allowing-and-adding-bots).
 

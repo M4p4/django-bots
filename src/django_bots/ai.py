@@ -34,11 +34,27 @@ def ai_bots() -> dict[str, dict[str, Any]]:
     return bots
 
 
+VERSION_SUFFIX = re.compile(r"[/ ]v?\d+(?:\.\d+)*$", re.I)
+
+
+def _base_name(name: str) -> str:
+    return VERSION_SUFFIX.sub("", name).lower()
+
+
 def ai_bot_names() -> list[str]:
-    """Return the AI bot names in use, after ``BOTS_AI_ALLOW`` and ``BOTS_AI_EXTRA``."""
+    """Return the AI bot names in use, after ``BOTS_AI_ALLOW`` and ``BOTS_AI_EXTRA``.
+
+    Allowing a name also allows its spellings with a version, such as ``Name/1.0``.
+    """
     allow = {name.lower() for name in bots_settings.AI_ALLOW}
     names = [*ai_bots(), *bots_settings.AI_EXTRA]
-    return list(dict.fromkeys(name for name in names if name.lower() not in allow))
+    return list(
+        dict.fromkeys(
+            name
+            for name in names
+            if name.lower() not in allow and _base_name(name) not in allow
+        )
+    )
 
 
 # Contact links name the operator, not the bot: "openai.com" would match "OpenAI".
@@ -51,8 +67,13 @@ def _get_matcher(
 ) -> Callable[[str], str | None]:
     """Build the matcher, rebuilt whenever one of the settings changes."""
     # Upstream lists some names in two spellings, so the first one is reported.
+    names = ai_bot_names()
+    lowered = {name.lower() for name in names}
     canonical: dict[str, str] = {}
-    for name in ai_bot_names():
+    for name in names:
+        # "Name/1.0" is left to "Name", which matches it too and reports a stable name.
+        if _base_name(name) != name.lower() and _base_name(name) in lowered:
+            continue
         canonical.setdefault(name.lower(), name)
     # Longest first, so a name wins over a shorter name it starts with.
     alternation = "|".join(map(re.escape, sorted(canonical, key=len, reverse=True)))
