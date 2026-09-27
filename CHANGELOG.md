@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- AI bots have a category: `training`, `search`, `assistant` or `agent`. It's available as `request.user_agent.ai_bot_category` and `django_bots.ai.ai_bot_category()`.
+- `AIBotBlockMiddleware` blocks only the categories in the new `BOTS_AI_BLOCK_CATEGORIES` setting. **The default leaves out `agent`**, so coding and browsing agents such as `Code`, `Cursor`, `Trae`, `Operator` and `ChatGPT Agent` are no longer blocked. Their user agents are the same as those of people using the VS Code, Cursor and Trae built-in browsers, who were blocked before. Set `BOTS_AI_BLOCK_CATEGORIES = ["training", "search", "assistant", "agent"]` to block them as before. `is_ai_bot` and robots.txt are unchanged.
+- The system check `django_bots.E007` reports unknown categories in `BOTS_AI_BLOCK_CATEGORIES`.
+
 ## 1.1.1 (2026-09-27)
 
 - Fixed the template filters raising `AttributeError` when the `request` variable isn't a request, for example a dict in an email context or an object with a `user_agent` string field. They return `False` like they do without a `request`.

@@ -59,6 +59,8 @@ that are ordinary words:
   research and one-off crawls.
 - `Code`, `Cursor` and `Trae` also appear in the user agents of the VS Code, Cursor and
   Trae desktop apps, so people opening your site in their built-in browsers match.
+  They're [agents](ai-bots.md#categories), which the middleware doesn't block by
+  default.
 - `Spider` matches any user agent with `spider` as a separate word, such as the Sogou
   search crawler and Screaming Frog SEO Spider.
 

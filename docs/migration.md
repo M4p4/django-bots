@@ -72,8 +72,8 @@ bots too. That's usually what you want.
 Some people count as bots, too. The VS Code, Cursor and Trae desktop apps put their
 names in the user agent of their built-in browsers, and these names are on the
 [AI bot list](limits.md#broad-entries). The Slack desktop app matches a crawler
-pattern. With `AIBotBlockMiddleware`, people in VS Code, Cursor and Trae are also
-blocked.
+pattern. `AIBotBlockMiddleware` doesn't block them by default, because these names are
+in the [`agent` category](ai-bots.md#categories).
 
 To keep the old behavior in one place, check the device family:
 

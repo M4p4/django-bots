@@ -20,7 +20,28 @@ from typing import Any
 
 from django_bots.conf import UA_MAX_LENGTH, bots_settings
 
-__all__ = ["ai_bot_names", "ai_bots", "is_ai_bot", "match_ai_bot", "robots_rules"]
+__all__ = [
+    "AI_BOT_CATEGORIES",
+    "ai_bot_category",
+    "ai_bot_names",
+    "ai_bots",
+    "categorize",
+    "is_ai_bot",
+    "match_ai_bot",
+    "robots_rules",
+]
+
+AI_BOT_CATEGORIES = ("training", "search", "assistant", "agent")
+"""Every AI bot name is in one of these categories. ``training`` is the fallback."""
+
+FUNCTION_CATEGORIES = {
+    "AI Data Scrapers": "training",
+    "AI Data Providers": "training",
+    "AI Search Crawlers": "search",
+    "AI Assistants": "assistant",
+    "AI Agents": "agent",
+    "AI Coding Agents": "agent",
+}
 
 
 def _read_data(name: str) -> Any:
@@ -39,6 +60,44 @@ VERSION_SUFFIX = re.compile(r"[/ ]v?\d+(?:\.\d+)*$", re.I)
 
 def _base_name(name: str) -> str:
     return VERSION_SUFFIX.sub("", name).lower()
+
+
+@lru_cache(maxsize=1)
+def _category_overrides() -> dict[str, str]:
+    groups: dict[str, list[str]] = _read_data("ai_categories.json")
+    return {name: category for category, names in groups.items() for name in names}
+
+
+def categorize(name: str, entry: dict[str, Any]) -> str:
+    """Return the category of an ai.robots.txt entry.
+
+    Upstream's ``function`` field decides where it's one of a few known labels, and
+    the bundled ``ai_categories.json`` covers the rest. Anything else is ``training``.
+    """
+    override = _category_overrides().get(name)
+    if override is not None:
+        return override
+    return FUNCTION_CATEGORIES.get(entry.get("function", ""), "training")
+
+
+@lru_cache(maxsize=1)
+def _bundled_categories() -> dict[str, str]:
+    categories: dict[str, str] = {}
+    for name, entry in ai_bots().items():
+        categories.setdefault(name.lower(), categorize(name, entry))
+    return categories
+
+
+def ai_bot_category(name: str) -> str | None:
+    """Return the category of an AI bot name, or ``None`` for a name that isn't listed.
+
+    Names from ``BOTS_AI_EXTRA`` are ``training``.
+    """
+    category = _bundled_categories().get(name.lower())
+    if category is not None:
+        return category
+    extra = {extra_name.lower() for extra_name in bots_settings.AI_EXTRA}
+    return "training" if name.lower() in extra else None
 
 
 def ai_bot_names() -> list[str]:

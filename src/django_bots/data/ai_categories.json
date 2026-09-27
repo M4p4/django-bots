@@ -1,0 +1,23 @@
+{
+  "search": [
+    "amazon-kendra",
+    "Amazonbot",
+    "Andibot",
+    "Anomura",
+    "Aranet-SearchBot",
+    "atlassian-bot",
+    "Claude-SearchBot",
+    "Cloudflare-AutoRAG",
+    "meta-webindexer",
+    "MistralAI-Index",
+    "OAI-SearchBot",
+    "PerplexityBot",
+    "PetalBot",
+    "YouBot"
+  ],
+  "assistant": [
+    "cohere-ai",
+    "MistralAI-User/1.0",
+    "wpbot"
+  ]
+}

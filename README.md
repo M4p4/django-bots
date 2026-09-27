@@ -113,6 +113,11 @@ MIDDLEWARE = [
 ]
 ```
 
+It blocks bots that collect training data, AI search crawlers and chatbot fetches.
+Coding and browsing agents such as Cursor and Operator get through by default, because
+they send the same user agent as people using those apps. `BOTS_AI_BLOCK_CATEGORIES`
+changes that.
+
 `BOTS_AI_ALLOW` keeps the bots you want, for both robots.txt and the middleware:
 
 ```python

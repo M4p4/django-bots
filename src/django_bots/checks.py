@@ -15,11 +15,12 @@ from django.conf import settings
 from django.core.checks import CheckMessage, Error, Warning
 from django.utils.module_loading import import_string
 
-from django_bots.ai import ai_bots
+from django_bots.ai import AI_BOT_CATEGORIES, ai_bots
 from django_bots.conf import BotsSettings, bots_settings
 
 __all__ = [
     "check_ai_allow",
+    "check_ai_block_categories",
     "check_ai_block_status",
     "check_ai_block_view",
     "check_crawler_extra",
@@ -37,6 +38,7 @@ LIST_SETTINGS = (
     "AI_ALLOW",
     "AI_EXTRA",
     "AI_BLOCK_EXEMPT_PATHS",
+    "AI_BLOCK_CATEGORIES",
 )
 
 
@@ -186,6 +188,20 @@ def check_ai_block_status(
             )
         ]
     return []
+
+
+def check_ai_block_categories(
+    app_configs: Sequence[AppConfig] | None, **kwargs: Any
+) -> list[CheckMessage]:
+    return [
+        Error(
+            f"BOTS_AI_BLOCK_CATEGORIES has an unknown category {category!r}.",
+            hint=f"Use categories from {', '.join(AI_BOT_CATEGORIES)}.",
+            id="django_bots.E007",
+        )
+        for category in _valid_list("AI_BLOCK_CATEGORIES") or ()
+        if category not in AI_BOT_CATEGORIES
+    ]
 
 
 def check_unknown_settings(

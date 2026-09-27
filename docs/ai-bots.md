@@ -12,6 +12,7 @@ def article(request):
 ```
 
 `ai_bot` is the name of the matched entry, for example `"GPTBot"`, or `None`.
+`ai_bot_category` is its [category](#categories), for example `"training"`.
 
 In templates, load the `bots` library and use the `is_ai_bot`
 [filter](templates.md#bots-filters):
@@ -134,6 +135,34 @@ template of the same name it overrides.
 If you already serve robots.txt from your own template, print the rules with the
 [`ai_robots_rules` tag](templates.md#ai_robots_rules) instead.
 
+## Categories
+
+Every AI bot is in one of four categories:
+
+| Category | What the bots do | Examples |
+|---|---|---|
+| `training` | Collect data to train models, or sell it | `GPTBot`, `ClaudeBot`, `CCBot`, `Bytespider` |
+| `search` | Index pages for an AI search engine | `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot` |
+| `assistant` | Fetch a page when a person asks a chatbot about it | `ChatGPT-User`, `Claude-User`, `Perplexity-User` |
+| `agent` | Browse or act for a person, including coding agents | `ChatGPT Agent`, `Operator`, `Code`, `Cursor`, `Claude-Code` |
+
+Coding agents such as `Code` (GitHub Copilot in VS Code), `Cursor` and `Trae` send the
+user agent of their desktop app, so a person using the app's built-in browser matches
+too. That's why the middleware doesn't block agents by default (see
+[`BOTS_AI_BLOCK_CATEGORIES`](#choosing-what-to-block)).
+
+The category comes from the `function` field in ai.robots.txt where it's one of the
+standard labels, and from a list bundled with django-bots for the rest. Anything
+unclear is `training`. Names from `BOTS_AI_EXTRA` are `training` too.
+
+```pycon
+>>> from django_bots.ai import ai_bot_category
+>>> ai_bot_category("GPTBot")
+'training'
+>>> ai_bot_category("Cursor")
+'agent'
+```
+
 ## Blocking AI bots
 
 robots.txt only asks. To refuse AI bots outright, add `AIBotBlockMiddleware`:
@@ -142,9 +171,9 @@ robots.txt only asks. To refuse AI bots outright, add `AIBotBlockMiddleware`:
 The list blocks more than AI crawlers. With the default settings, the middleware also
 refuses `facebookexternalhit` (link previews on Facebook, Messenger and WhatsApp),
 `Applebot` (Siri and Spotlight search), `PetalBot` (Huawei's search engine),
-`GoogleOther`, any user agent with the word `spider`, and people in the VS Code, Cursor
-and Trae desktop apps. See [Broad entries](limits.md#broad-entries) and allow the ones
-you need with [`BOTS_AI_ALLOW`](#allowing-and-adding-bots).
+`GoogleOther` and any user agent with the word `spider`. See
+[Broad entries](limits.md#broad-entries) and allow the ones you need with
+[`BOTS_AI_ALLOW`](#allowing-and-adding-bots).
 ```
 
 ```python
@@ -197,6 +226,26 @@ BOTS_AI_BLOCK_EXEMPT_PATHS = ["/robots.txt", "/llms.txt"]
 
 `BOTS_AI_ALLOW` applies to the middleware too, so an allowed bot is neither disallowed
 in robots.txt nor blocked.
+
+### Choosing what to block
+
+`BOTS_AI_BLOCK_CATEGORIES` sets the [categories](#categories) the middleware blocks.
+The default blocks everything except agents:
+
+```python
+BOTS_AI_BLOCK_CATEGORIES = ["training", "search", "assistant"]
+```
+
+To block only bots that collect training data, and let AI search and chatbot fetches
+through:
+
+```python
+BOTS_AI_BLOCK_CATEGORIES = ["training"]
+```
+
+Add `"agent"` to block agents as well, including people in the VS Code, Cursor and
+Trae built-in browsers. The setting only changes blocking: robots.txt still lists every
+bot, and `is_ai_bot` is true for every category.
 
 ## Allowing and adding bots
 
