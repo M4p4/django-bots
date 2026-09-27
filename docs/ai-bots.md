@@ -60,7 +60,8 @@ the upstream `operator`, `respect` (whether it follows robots.txt), `function` a
 
 Each name matches case-insensitively as a whole word anywhere in the user-agent
 string. `GPTBot` matches `...; GPTBot/1.2; ...` but not `xGPTBot`. When several names
-match, `ai_bot` is the one that comes first in the string.
+match, `ai_bot` is the one that comes first in the string, and
+`django_bots.ai.match_ai_bots()` returns all of them.
 
 Upstream lists a few bots a second time with a version, such as `MistralAI-User` and
 `MistralAI-User/1.0`. `ai_bot` reports the name without the version for every version,
@@ -242,6 +243,9 @@ through:
 ```python
 BOTS_AI_BLOCK_CATEGORIES = ["training"]
 ```
+
+A request that matches several names is blocked when any of them is in a blocked
+category, so `Operator/1.0 ClaudeBot/1.0` is blocked as `ClaudeBot`.
 
 Add `"agent"` to block agents as well, including people in the VS Code, Cursor and
 Trae built-in browsers. The setting only changes blocking: robots.txt still lists every

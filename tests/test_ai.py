@@ -16,6 +16,7 @@ from django_bots.ai import (
     categorize,
     is_ai_bot,
     match_ai_bot,
+    match_ai_bots,
     robots_rules,
 )
 from django_bots.conf import UA_MAX_LENGTH
@@ -381,3 +382,17 @@ def test_extra_names_are_training():
 )
 def test_user_agent_category(ua_string, expected):
     assert parse(ua_string).ai_bot_category == expected
+
+
+@pytest.mark.parametrize(
+    ("ua_string", "expected"),
+    [
+        ("Operator/1.0 ClaudeBot/1.0", ("Operator", "ClaudeBot")),
+        ("GPTBot/1.2 gptbot GPTBot", ("GPTBot",)),
+        (GPTBOT, ("GPTBot",)),
+        (WINDOWS_CHROME, ()),
+    ],
+)
+def test_match_all_names(ua_string, expected):
+    assert match_ai_bots(ua_string) == expected
+    assert match_ai_bot(ua_string) == (expected[0] if expected else None)

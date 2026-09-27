@@ -166,6 +166,10 @@ CHATGPT_USER = (
         (["training"], CHATGPT_USER, 200),
         (["training"], GPTBOT, 403),
         ([], GPTBOT, 200),
+        (None, "Operator/1.0 ClaudeBot/1.0", 403),
+        (None, f"Code {GPTBOT}", 403),
+        (None, f"{CURSOR} GPTBot/1.2", 403),
+        (["training"], f"Operator/1.0 {CHATGPT_USER}", 200),
     ],
 )
 def test_block_categories(rf, settings, categories, user_agent, status):
