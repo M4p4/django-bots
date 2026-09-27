@@ -124,6 +124,44 @@ def test_duplicate_spellings_report_the_first():
     assert match_ai_bot(META) == first
 
 
+@pytest.mark.parametrize(
+    ("ua_string", "expected"),
+    [
+        ("MistralAI-User/1.0", "MistralAI-User"),
+        ("Mozilla/5.0 (compatible; MistralAI-User/1.1)", "MistralAI-User"),
+        ("iaskspider/2.0", "iaskspider"),
+        ("iaskspider/2.1", "iaskspider"),
+        ("Brightbot 1.0", "Brightbot"),
+        ("Brightbot 2.0", "Brightbot"),
+    ],
+)
+def test_versioned_spellings_report_the_base_name(ua_string, expected):
+    assert match_ai_bot(ua_string) == expected
+
+
+def test_versioned_spelling_without_base_name():
+    with override_settings(BOTS_AI_EXTRA=["NewBot/2.0"]):
+        result = match_ai_bot("NewBot/2.0")
+
+    assert result == "NewBot/2.0"
+
+
+def test_versioned_extra_reports_the_base_name():
+    with override_settings(BOTS_AI_EXTRA=["NewBot", "NewBot v2"]):
+        result = match_ai_bot("NewBot v2")
+
+    assert result == "NewBot"
+
+
+def test_allow_setting_covers_versioned_spellings():
+    with override_settings(BOTS_AI_ALLOW=["mistralai-user"]):
+        result = match_ai_bot("MistralAI-User/1.0")
+        names = ai_bot_names()
+
+    assert result is None
+    assert "MistralAI-User/1.0" not in names
+
+
 def test_robots_only_tokens_are_listed():
     assert {"Google-Extended", "Applebot-Extended"} <= set(ai_bot_names())
 
@@ -202,6 +240,7 @@ def test_robots_rules_keep_duplicate_spellings():
     assert "User-agent: meta-externalagent\n" in result
     assert "User-agent: Meta-ExternalAgent\n" in result
     assert "User-agent: Google-Extended\n" in result
+    assert "User-agent: MistralAI-User/1.0\n" in result
 
 
 def test_robots_rules_allow_setting():

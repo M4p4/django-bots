@@ -61,6 +61,10 @@ Each name matches case-insensitively as a whole word anywhere in the user-agent
 string. `GPTBot` matches `...; GPTBot/1.2; ...` but not `xGPTBot`. When several names
 match, `ai_bot` is the one that comes first in the string.
 
+Upstream lists a few bots a second time with a version, such as `MistralAI-User` and
+`MistralAI-User/1.0`. `ai_bot` reports the name without the version for every version,
+so logs and stats group them together.
+
 URLs and email addresses are removed before matching. They name the operator, not the
 bot: GPTBot's user agent links to `openai.com`, which would otherwise match the
 separate `OpenAI` entry, and Baidu's search crawler links to a page named
@@ -195,8 +199,9 @@ BOTS_AI_ALLOW = ["OAI-SearchBot"]
 ```
 
 Names are compared case-insensitively, and the list in use is available from
-`django_bots.ai.ai_bot_names()`. Allowed names are also left out of the robots.txt
-rules.
+`django_bots.ai.ai_bot_names()`. Allowing a name also allows its spellings with a
+version, so `"MistralAI-User"` covers `MistralAI-User/1.0`. Allowed names are also left
+out of the robots.txt rules.
 
 `BOTS_AI_EXTRA` adds names that aren't in ai.robots.txt yet. They match the same way
 as the bundled names and get a line in the robots.txt rules:
