@@ -12,7 +12,5 @@ build/
 dist/
 docs/_build/
 
-# Local planning documents, never pushed
-specs.md
-buildplan.md
-CLAUDE.md
+# Personal Claude Code instructions
+CLAUDE.local.md
