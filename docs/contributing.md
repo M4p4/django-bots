@@ -91,3 +91,10 @@ make one:
 CI runs every check on the tag. When they all pass, the Release job makes sure the tag
 matches the version in the built wheel and publishes the same files to PyPI with
 trusted publishing. Nothing is rebuilt, and no PyPI token is stored in the repository.
+
+## Documentation builds
+
+The Docs workflow asks Read the Docs to build the documentation: `latest` on every push
+to `main`, and `stable` for every version tag after syncing the tags. It needs a Read the
+Docs API token with access to the `djangobots` project, stored as the `RTD_TOKEN`
+repository secret. Without the secret the workflow only prints a warning.
