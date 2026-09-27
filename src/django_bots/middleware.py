@@ -113,7 +113,6 @@ class AIBotBlockMiddleware:
 
     @staticmethod
     def blocks(request: HttpRequest) -> bool:
-        # path_info leaves out SCRIPT_NAME, so exempt paths work under a URL prefix.
         if request.path_info in bots_settings.AI_BLOCK_EXEMPT_PATHS:
             return False
         return is_ai_bot(request.headers.get("user-agent", ""))
@@ -125,6 +124,5 @@ class AIBotBlockMiddleware:
             status=bots_settings.AI_BLOCK_STATUS,
             content_type="text/plain; charset=utf-8",
         )
-        # Shared caches must not serve the block response to other visitors.
         patch_cache_control(response, private=True, no_store=True)
         return response
