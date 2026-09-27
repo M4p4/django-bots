@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fixed the template filters raising `AttributeError` when the `request` variable isn't a request, for example a dict in an email context or an object with a `user_agent` string field. They return `False` like they do without a `request`.
+
 ## 1.1.0 (2026-09-27)
 
 - New system checks for settings. Errors report list settings that aren't lists of non-empty strings (`django_bots.E003`), invalid `BOTS_CRAWLER_EXTRA` patterns (`E004`), a `BOTS_UA_CACHE_SIZE` that isn't an integer of 0 or more (`E005`) and a `BOTS_AI_BLOCK_STATUS` outside 100 to 599 (`E006`). Before, these broke detection silently or raised on requests. Warnings report a block status below 400 (`W002`), unknown `BOTS_*` settings (`W003`), `BOTS_AI_ALLOW` names that aren't in the list (`W004`) and `BOTS_CRAWLER_IGNORE` entries that match no pattern (`W005`).

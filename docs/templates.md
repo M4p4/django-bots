@@ -24,8 +24,8 @@ django-user-agents, so existing templates keep working:
 The template context needs `request`, which the
 `django.template.context_processors.request` context processor adds. The filters use
 `request.user_agent` when the middleware has set it, and otherwise parse the header
-once and set it on the request. When `request` isn't in the context, every filter
-returns `False`.
+once and set it on the request. When `request` isn't in the context, or is something
+other than a request, such as a dict in an email context, every filter returns `False`.
 
 ## `bots` filters
 
