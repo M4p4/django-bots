@@ -78,6 +78,17 @@ def test_is_bot(ua_string, is_bot):
 
 
 @pytest.mark.parametrize(
+    ("ua_bytes", "expected"),
+    [(IPHONE.encode(), IPHONE), (b"", ""), ("Brüwser/1.0".encode(), "BrÃ¼wser/1.0")],
+)
+def test_parse_bytes(ua_bytes, expected):
+    result = parse(ua_bytes)
+
+    assert result.ua_string == expected
+    assert str(result) == str(parse(expected))
+
+
+@pytest.mark.parametrize(
     ("ua_string", "is_tablet"),
     [
         ("Mozilla/5.0 (Android 14; Tablet; rv:142.0) Gecko/142.0 Firefox/142.0", True),

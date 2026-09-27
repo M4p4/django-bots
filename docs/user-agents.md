@@ -48,6 +48,9 @@ details:
 (True, True, False)
 ```
 
+It also takes bytes, such as a header from an ASGI scope, and decodes them as Latin-1
+the way Django does. `None` parses like an empty string.
+
 The API is the same as `user_agents.parse()` from the
 [user-agents](https://github.com/selwin/python-user-agents) package, which
 django-user-agents is built on.

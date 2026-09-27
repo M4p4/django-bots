@@ -309,6 +309,11 @@ class UserAgent:
         return self.browser.family in EMAIL_PROGRAM_FAMILIES
 
 
-def parse(user_agent_string: str | None) -> UserAgent:
-    """Parse a user-agent string. ``None`` parses like an empty string."""
+def parse(user_agent_string: str | bytes | None) -> UserAgent:
+    """Parse a user-agent string. ``None`` parses like an empty string.
+
+    Bytes are decoded as Latin-1, the way Django decodes request headers.
+    """
+    if isinstance(user_agent_string, bytes):
+        user_agent_string = user_agent_string.decode("latin-1")
     return UserAgent(user_agent_string or "")
