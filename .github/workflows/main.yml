@@ -5,6 +5,8 @@ on:
     branches:
     - main
   pull_request:
+  # The AI robots sync workflow dispatches CI on its pull request branch.
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
