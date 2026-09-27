@@ -47,6 +47,10 @@ bundled:
 'v1.52'
 ```
 
+A scheduled job checks for new ai.robots.txt releases every day and opens a pull
+request that updates the bundled list. Data-only updates ship as patch releases, so
+upgrading django-bots is how you pick up new bots.
+
 `django_bots.ai.ai_bots()` returns the bundled entries, keyed by name. Each entry has
 the upstream `operator`, `respect` (whether it follows robots.txt), `function` and
 `description` fields. django-bots shows them but doesn't use them for decisions.
