@@ -1,13 +1,15 @@
 # Settings
 
-All settings are optional.
+All settings are optional. The [system checks](#system-checks) report values
+django-bots can't use when you run `manage.py check` or start the server.
 
 ## `BOTS_UA_CACHE_SIZE`
 
 Default: `2048`
 
 How many parsed user agents, crawler checks and AI bot checks each worker process
-keeps in its least-recently-used caches. Set it to `0` to turn the cache off. See
+keeps in its least-recently-used caches. It must be an integer. Set it to `0` to turn
+the cache off. See
 [Caching](user-agents.md#caching).
 
 ## `BOTS_CRAWLER_EXTRA`
@@ -15,7 +17,8 @@ keeps in its least-recently-used caches. Set it to `0` to turn the cache off. Se
 Default: `[]`
 
 Regular expressions to treat as crawlers, on top of the crawler-user-agents list.
-They're matched case-insensitively anywhere in the user-agent string. See
+They're joined into one regex and matched case-insensitively anywhere in the
+user-agent string, so leave out inline flags like `(?i)`. See
 [Adding and removing patterns](crawlers.md#adding-and-removing-patterns).
 
 ## `BOTS_CRAWLER_IGNORE`
@@ -43,7 +46,8 @@ Extra AI bot names, matched the same way as the bundled ones.
 
 Default: `403`
 
-Status code of the response `AIBotBlockMiddleware` sends to AI bots. See
+Status code of the response `AIBotBlockMiddleware` sends to AI bots, from 100 to 599.
+See
 [Blocking AI bots](ai-bots.md#blocking-ai-bots).
 
 ## `BOTS_AI_BLOCK_VIEW`
@@ -68,3 +72,22 @@ If you set it, keep `/robots.txt` in the list so bots can read your rules.
 `USER_AGENTS_CACHE` is ignored. django-bots caches parsed user agents in process
 instead of in Django's cache framework. If the setting is still there, the system
 check `django_bots.W001` warns about it, so you can remove it.
+
+## System checks
+
+Every list setting must be a list or tuple of non-empty strings. A plain string would
+be read one character at a time.
+
+| ID | Reports |
+|---|---|
+| `django_bots.E001` | `django_user_agents` installed next to `django_bots` |
+| `django_bots.E002` | a `BOTS_AI_BLOCK_VIEW` that can't be imported, isn't callable or is a class |
+| `django_bots.E003` | a list setting that isn't a list of non-empty strings |
+| `django_bots.E004` | a `BOTS_CRAWLER_EXTRA` pattern that isn't a valid regex |
+| `django_bots.E005` | a `BOTS_UA_CACHE_SIZE` that isn't an integer of 0 or more |
+| `django_bots.E006` | a `BOTS_AI_BLOCK_STATUS` that isn't a status code from 100 to 599 |
+| `django_bots.W001` | `USER_AGENTS_CACHE`, which is ignored |
+| `django_bots.W002` | a `BOTS_AI_BLOCK_STATUS` below 400, which tells bots the request worked |
+| `django_bots.W003` | a `BOTS_*` setting django-bots doesn't know, usually a typo |
+| `django_bots.W004` | a `BOTS_AI_ALLOW` name that isn't in the AI bot list |
+| `django_bots.W005` | a `BOTS_CRAWLER_IGNORE` entry that isn't a crawler-user-agents pattern |
