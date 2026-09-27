@@ -4,13 +4,17 @@ on:
   push:
     branches:
     - main
+    tags:
+    # Dotted version tags only (1.0.0), so a bare tag can't start a release.
+    - '*.*.*'
   pull_request:
   # The AI robots sync workflow dispatches CI on its pull request branch.
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel a tag build: it's the one that publishes to PyPI.
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 permissions:
   contents: read
@@ -118,3 +122,44 @@ jobs:
         python-version: '3.14'
     - name: Build docs
       run: uvx --with tox-uv==1.35.2 tox==4.57.0 run -e docs
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    # Publishes the artifact every check ran against; this job never rebuilds.
+    needs: [ lint, tests, coverage, build, docs ]
+    if: startsWith(github.ref, 'refs/tags/')
+    environment: release
+    permissions:
+      id-token: write
+    steps:
+    - name: Download distributions
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # frozen: v7.0.0
+      with:
+        name: dist
+        path: dist/
+    - name: Check the tag matches the version being published
+      run: |
+        set -euo pipefail
+        version=""
+        for wheel in dist/*.whl; do
+          [ -e "$wheel" ] || continue
+          if [ -n "$version" ]; then
+            echo "::error::more than one wheel in dist/, refusing to guess"
+            exit 1
+          fi
+          filename=$(basename "$wheel")
+          version=${filename#*-}
+          version=${version%%-*}
+        done
+        if [ -z "$version" ]; then
+          echo "::error::no wheel found in dist/"
+          exit 1
+        fi
+        if [ "$GITHUB_REF_NAME" != "$version" ]; then
+          echo "::error::tag $GITHUB_REF_NAME does not match packaged version $version ($filename)"
+          exit 1
+        fi
+        echo "Releasing $version"
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # frozen: v1.14.0

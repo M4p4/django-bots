@@ -4,7 +4,7 @@ requires = [ "setuptools>=77" ]
 
 [project]
 name = "django-bots"
-version = "0.1.0.dev0"
+version = "1.0.0"
 description = "User-agent parsing, crawler detection and AI bot blocking for Django."
 readme = "README.md"
 keywords = [ "ai", "bots", "crawlers", "django", "robots.txt", "user-agents" ]
@@ -15,7 +15,7 @@ authors = [
 ]
 requires-python = ">=3.10"
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 5 - Production/Stable",
   "Framework :: Django",
   "Framework :: Django :: 5.2",
   "Framework :: Django :: 6.0",
