@@ -72,6 +72,7 @@ TABLET_DEVICE_FAMILIES = frozenset(
         "Galaxy Tab",
         "Xoom",
         "Dell Streak",
+        "Generic Tablet",
     }
 )
 
