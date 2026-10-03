@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.2.2 (2026-10-03)
+
+- Updated the AI bot list to ai.robots.txt v2.0: 6 added, 0 removed.
+
 ## 1.2.1 (2026-09-27)
 
 - Fixed `AIBotBlockMiddleware` letting a bot through when an agent's name came first in its user agent, for example `Operator/1.0 ClaudeBot/1.0` or a user agent starting with `Code`. It now blocks the request when any matched name is in `BOTS_AI_BLOCK_CATEGORIES`.
