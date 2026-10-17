@@ -442,7 +442,7 @@ wheels = [
 
 [[package]]
 name = "django-bots"
-version = "1.2.2"
+version = "1.2.3"
 source = { editable = "." }
 default-groups = ["django52", "test"]
 dependencies = [
