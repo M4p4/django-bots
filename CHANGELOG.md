@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.2.4 (2026-11-18)
+
+- Updated the AI bot list to ai.robots.txt v2.2: 21 added, 0 removed.
+
 ## 1.2.3 (2026-10-17)
 
 - Updated the AI bot list to ai.robots.txt v2.1: 7 added, 0 removed.
